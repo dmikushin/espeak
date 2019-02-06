@@ -81,7 +81,7 @@ enum t_command_state
 typedef struct 
 {
   enum t_espeak_type type;
-  t_command_state state; 
+  enum t_command_state state; 
 
   union command
   {

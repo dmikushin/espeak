@@ -377,7 +377,7 @@ static void close_stream()
 //>
 //<say_thread
 
-static void* say_thread(void*)
+static void* say_thread(void* arg)
 {
   ENTER("say_thread");
 
@@ -490,7 +490,7 @@ int fifo_is_command_enabled()
 typedef struct t_node
 {
   t_espeak_command* data;
-  t_node *next;
+  struct t_node *next;
 } node;
 
 static node* head=NULL;

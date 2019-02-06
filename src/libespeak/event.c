@@ -64,7 +64,7 @@ enum {MIN_TIMEOUT_IN_MS=10,
 typedef struct t_node
 {
   void* data;
-  t_node *next;
+  struct t_node *next;
 } node;
 
 static node* head=NULL;
@@ -475,7 +475,7 @@ ENTER("get_remaining_time");
 //>
 //<polling_thread
 
-static void* polling_thread(void*)
+static void* polling_thread(void* arg)
 {
 ENTER("polling_thread");
 
