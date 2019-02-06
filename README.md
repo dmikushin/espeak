@@ -1,4 +1,8 @@
-The eSpeak homepage is:  http://espeak.sourceforge.net
+# eSpeak port for CMake and C language
+
+The eSpeak homepage is:  [http://espeak.sourceforge.net](http://espeak.sourceforge.net)
+
+Here we adapt eSpeak to compile for simple embedded platforms with only C compiler available.
 
 ## Compiling
 
