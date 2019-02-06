@@ -19,8 +19,6 @@
 
 
 
-#include "StdAfx.h"
-
 #include <stdio.h>
 #include <ctype.h>
 #include <wctype.h>
