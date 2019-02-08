@@ -30,7 +30,9 @@
 #ifdef PLATFORM_RISCOS
 #include "kernel.h"
 #else
+#if HAVE_DIRENT
 #include "dirent.h"
+#endif
 #endif
 #endif
 
@@ -1767,6 +1769,7 @@ static void GetVoices(const char *path)
 	FindClose(hFind);
 
 #else
+#if HAVE_DIRENT
 	DIR *dir;
 	struct dirent *ent;
 
@@ -1807,6 +1810,9 @@ static void GetVoices(const char *path)
 		}
 	}
 	closedir(dir);
+#else
+	fprintf(stderr, "Directory listing is not supported on this platform\n");
+#endif
 #endif
 #endif
 }   // end of GetVoices
