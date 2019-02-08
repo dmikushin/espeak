@@ -33,12 +33,12 @@
 #include "translate.h"
 #include "voice.h"
 
-int option_mbrola_phonemes;
+int32_t option_mbrola_phonemes;
 
 #ifdef INCLUDE_MBROLA
 
-extern int Read4Bytes(FILE *f);
-extern void SetPitch2(voice_t *voice, int pitch1, int pitch2, int *pitch_base, int *pitch_range);
+extern int32_t Read4Bytes(FILE *f);
+extern void SetPitch2(voice_t *voice, int32_t pitch1, int32_t pitch2, int32_t *pitch_base, int32_t *pitch_range);
 extern unsigned char *outbuf;
 
 #ifndef PLATFORM_WINDOWS
@@ -50,9 +50,9 @@ extern unsigned char *outbuf;
 typedef void (WINAPI *PROCVV)(void);
 typedef void (WINAPI *PROCVI)(int);
 typedef void (WINAPI *PROCVF)(float);
-typedef int (WINAPI *PROCIV)();
-typedef int (WINAPI *PROCIC) (char *);
-typedef int (WINAPI *PROCISI)(short *,int);
+typedef int32_t (WINAPI *PROCIV)();
+typedef int32_t (WINAPI *PROCIC) (char *);
+typedef int32_t (WINAPI *PROCISI)(short *,int);
 typedef char* (WINAPI *PROCVCI)(char *,int);
 
 PROCIC		init_MBR;
@@ -106,16 +106,16 @@ void unload_MBR()
 
 
 static MBROLA_TAB *mbrola_tab = NULL;
-static int mbrola_control = 0;
-static int mbr_name_prefix = 0;
+static int32_t mbrola_control = 0;
+static int32_t mbr_name_prefix = 0;
 
-espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int srate)
+espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int32_t srate)
 {//===================================================================================
 // Load a phoneme name translation table from espeak-data/mbrola
 
-	int size;
-	int ix;
-	int *pw;
+	int32_t size;
+	int32_t ix;
+	int32_t *pw;
 	FILE *f_in;
 	char path[sizeof(path_home)+15];
 
@@ -179,7 +179,7 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 	}
 
 	mbrola_control = Read4Bytes(f_in);
-	pw = (int *)mbrola_tab;
+	pw = (int32_t *)mbrola_tab;
 	for(ix=4; ix<size; ix+=4)
 	{
 		*pw++ = Read4Bytes(f_in);
@@ -201,14 +201,14 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 }  // end of LoadMbrolaTable
 
 
-static int GetMbrName(PHONEME_LIST *plist, PHONEME_TAB *ph, PHONEME_TAB *ph_prev, PHONEME_TAB *ph_next, int *name2, int *split, int *control)
+static int32_t GetMbrName(PHONEME_LIST *plist, PHONEME_TAB *ph, PHONEME_TAB *ph_prev, PHONEME_TAB *ph_next, int32_t *name2, int32_t *split, int32_t *control)
 {//==========================================================================================================================================
 // Look up a phoneme in the mbrola phoneme name translation table
 // It may give none, 1, or 2 mbrola phonemes
 	MBROLA_TAB *pr;
 	PHONEME_TAB *other_ph;
-	int found = 0;
-	static int mnem;
+	int32_t found = 0;
+	static int32_t mnem;
 
 	// control
 	// bit 0  skip the next phoneme
@@ -291,23 +291,23 @@ static int GetMbrName(PHONEME_LIST *plist, PHONEME_TAB *ph, PHONEME_TAB *ph_prev
 }
 
 
-static char *WritePitch(int env, int pitch1, int pitch2, int split, int final)
+static char *WritePitch(int32_t env, int32_t pitch1, int32_t pitch2, int32_t split, int32_t final)
 {//===========================================================================
 // final=1:  only give the final pitch value.
-	int x;
-	int ix;
-	int pitch_base;
-	int pitch_range;
-	int p1,p2,p_end;
+	int32_t x;
+	int32_t ix;
+	int32_t pitch_base;
+	int32_t pitch_range;
+	int32_t p1,p2,p_end;
 	unsigned char *pitch_env;
-	int max = -1;
-	int min = 999;
-	int y_max=0;
-	int y_min=0;
-	int env100 = 80;  // apply the pitch change only over this proportion of the mbrola phoneme(s)
-	int y2;
-	int y[4];
-	int env_split;
+	int32_t max = -1;
+	int32_t min = 999;
+	int32_t y_max=0;
+	int32_t y_min=0;
+	int32_t env100 = 80;  // apply the pitch change only over this proportion of the mbrola phoneme(s)
+	int32_t y2;
+	int32_t y[4];
+	int32_t env_split;
 	char buf[50];
 	static char output[50];
 
@@ -336,7 +336,7 @@ static char *WritePitch(int env, int pitch1, int pitch2, int split, int final)
 			y_min = x;
 		}
 	}
-	// set an additional pitch point half way through the phoneme.
+	// set an additional pitch point32_t half way through the phoneme.
 	// but look for a maximum or a minimum and use that instead
 	y[2] = 64;
 	if((y_max > 0) && (y_max < 127))
@@ -408,12 +408,12 @@ static char *WritePitch(int env, int pitch1, int pitch2, int split, int final)
 }  // end of WritePitch
 
 
-int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbrola)
+int32_t MbrolaTranslate(PHONEME_LIST *plist, int32_t n_phonemes, int32_t resume, FILE *f_mbrola)
 {//=================================================================================
 // Generate a mbrola pho file
-	unsigned int name;
-	int len;
-	int len1;
+	uint32_t name;
+	int32_t len;
+	int32_t len1;
 	PHONEME_TAB *ph;
 	PHONEME_TAB *ph_next;
 	PHONEME_TAB *ph_prev;
@@ -421,19 +421,19 @@ int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbr
 	PHONEME_LIST *next;
 	PHONEME_DATA phdata;
 	FMT_PARAMS fmtp;
-	int pause = 0;
-	int released;
-	int name2;
-	int control;
-	int done;
-	int len_percent;
+	int32_t pause = 0;
+	int32_t released;
+	int32_t name2;
+	int32_t control;
+	int32_t done;
+	int32_t len_percent;
 	const char *final_pitch;
 	char *ptr;
 	char mbr_buf[120];
 
-	static int phix;
-	static int embedded_ix;
-	static int word_count;
+	static int32_t phix;
+	static int32_t embedded_ix;
+	static int32_t word_count;
 
 	if (!resume) {
 		phix = 1;
@@ -610,7 +610,7 @@ int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbr
 		}
 		else
 		{
-			int res = write_MBR(mbr_buf);
+			int32_t res = write_MBR(mbr_buf);
 			if (res < 0)
 				return 0;  /* don't get stuck on error */
 			if (res == 0)
@@ -637,7 +637,7 @@ int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbr
 }  // end of MbrolaTranslate
 
 
-int MbrolaGenerate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
+int32_t MbrolaGenerate(PHONEME_LIST *phoneme_list, int32_t *n_ph, int32_t resume)
 {//==================================================================
 	FILE *f_mbrola = NULL;
 
@@ -650,22 +650,22 @@ int MbrolaGenerate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
 		f_mbrola = f_trans;
 	}
 
-	int again = MbrolaTranslate(phoneme_list, *n_ph, resume, f_mbrola);
+	int32_t again = MbrolaTranslate(phoneme_list, *n_ph, resume, f_mbrola);
 	if (!again)
 		*n_ph = 0;
 	return again;
 }
 
 
-int MbrolaFill(int length, int resume, int amplitude)
+int32_t MbrolaFill(int32_t length, int32_t resume, int32_t amplitude)
 {//==================================================
 // Read audio data from Mbrola (length is in millisecs)
 
-	static int n_samples;
-	int req_samples, result;
-	int ix;
+	static int32_t n_samples;
+	int32_t req_samples, result;
+	int32_t ix;
 	short value16;
-	int value;
+	int32_t value;
 
 	if (!resume)
 		n_samples = samplerate * length / 1000;
@@ -706,17 +706,17 @@ void MbrolaReset(void)
 
 // mbrola interface is not compiled, provide dummy functions.
 
-espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int srate)
+espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int32_t srate)
 {
 	return(EE_INTERNAL_ERROR);
 }
 
-int MbrolaGenerate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
+int32_t MbrolaGenerate(PHONEME_LIST *phoneme_list, int32_t *n_ph, int32_t resume)
 {
 	return(0);
 }
 
-int MbrolaFill(int length, int resume, int amplitude)
+int32_t MbrolaFill(int32_t length, int32_t resume, int32_t amplitude)
 {
 	return(0);
 }

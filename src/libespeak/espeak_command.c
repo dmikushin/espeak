@@ -30,14 +30,14 @@
 #include "debug.h"
 
 
-static unsigned int my_current_text_id=0;
+static uint32_t my_current_text_id=0;
 
 
 //<create_espeak_text
-t_espeak_command* create_espeak_text(const void *text, size_t size, unsigned int position, espeak_POSITION_TYPE position_type, unsigned int end_position, unsigned int flags, void* user_data)
+t_espeak_command* create_espeak_text(const void *text, size_t size, uint32_t position, espeak_POSITION_TYPE position_type, uint32_t end_position, uint32_t flags, void* user_data)
 {
   ENTER("create_espeak_text");
-  int a_error=1;
+  int32_t a_error=1;
   void* a_text = NULL;
   t_espeak_text* data = NULL;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
@@ -91,10 +91,10 @@ t_espeak_command* create_espeak_text(const void *text, size_t size, unsigned int
 //>
 
 
-t_espeak_command* create_espeak_terminated_msg(unsigned int unique_identifier, void* user_data)
+t_espeak_command* create_espeak_terminated_msg(uint32_t unique_identifier, void* user_data)
 {
   ENTER("create_espeak_terminated_msg");
-  int a_error=1;
+  int32_t a_error=1;
   t_espeak_terminated_msg* data = NULL;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
 
@@ -132,10 +132,10 @@ t_espeak_command* create_espeak_terminated_msg(unsigned int unique_identifier, v
 
 
 //<create_espeak_mark
-t_espeak_command* create_espeak_mark(const void *text, size_t size, const char *index_mark, unsigned int end_position, unsigned int flags, void* user_data)
+t_espeak_command* create_espeak_mark(const void *text, size_t size, const char *index_mark, uint32_t end_position, uint32_t flags, void* user_data)
 {
   ENTER("create_espeak_mark");
-  int a_error=1;
+  int32_t a_error=1;
   void* a_text = NULL;
   char *a_index_mark = NULL;
   t_espeak_mark* data = NULL;
@@ -195,7 +195,7 @@ t_espeak_command* create_espeak_mark(const void *text, size_t size, const char *
 t_espeak_command* create_espeak_key(const char *key_name, void *user_data)
 {
   ENTER("create_espeak_key");
-  int a_error=1;
+  int32_t a_error=1;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
 
   if (!key_name || !a_command)
@@ -228,7 +228,7 @@ t_espeak_command* create_espeak_key(const char *key_name, void *user_data)
 t_espeak_command* create_espeak_char(wchar_t character, void* user_data)
 {
   ENTER("create_espeak_char");
-  int a_error=1;
+  int32_t a_error=1;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
   if (!a_command)
     {
@@ -260,10 +260,10 @@ t_espeak_command* create_espeak_char(wchar_t character, void* user_data)
 //>
 //< create_espeak_parameter
 
-t_espeak_command* create_espeak_parameter(espeak_PARAMETER parameter, int value, int relative)
+t_espeak_command* create_espeak_parameter(espeak_PARAMETER parameter, int32_t value, int32_t relative)
 {
   ENTER("create_espeak_parameter");
-  int a_error=1;
+  int32_t a_error=1;
   t_espeak_parameter* data = NULL;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
   if (!a_command)
@@ -300,7 +300,7 @@ t_espeak_command* create_espeak_parameter(espeak_PARAMETER parameter, int value,
 t_espeak_command* create_espeak_punctuation_list(const wchar_t *punctlist)
 {
   ENTER("create_espeak_punctuation_list");
-  int a_error=1;
+  int32_t a_error=1;
   //  wchar_t *a_list = NULL;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
 
@@ -343,7 +343,7 @@ t_espeak_command* create_espeak_voice_name(const char *name)
 {
   ENTER("create_espeak_voice_name");
 
-  int a_error=1;
+  int32_t a_error=1;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
 
   if (!name || !a_command)
@@ -374,7 +374,7 @@ t_espeak_command* create_espeak_voice_name(const char *name)
 t_espeak_command* create_espeak_voice_spec(espeak_VOICE *voice)
 {
   ENTER("create_espeak_voice_spec");
-  int a_error=1;
+  int32_t a_error=1;
   t_espeak_command* a_command = (t_espeak_command*)malloc(sizeof(t_espeak_command));
 
   if (!voice || !a_command)
@@ -423,10 +423,10 @@ t_espeak_command* create_espeak_voice_spec(espeak_VOICE *voice)
 
 //>
 //< delete_espeak_command
-int delete_espeak_command( t_espeak_command* the_command)
+int32_t delete_espeak_command( t_espeak_command* the_command)
 {
   ENTER("delete_espeak_command");
-  int a_status = 0;
+  int32_t a_status = 0;
   if (the_command)
     {
       switch(the_command->type)

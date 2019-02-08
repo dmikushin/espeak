@@ -115,7 +115,7 @@ ALPHABET *AlphabetFromName(const char *name)
 }
 
 
-ALPHABET *AlphabetFromChar(int c)
+ALPHABET *AlphabetFromChar(int32_t c)
 {//===============================
 	// Find the alphabet from a character.
 	ALPHABET *alphabet = alphabets;
@@ -140,16 +140,16 @@ static void Translator_Russian(Translator *tr);
 
 
 
-static void SetLetterVowel(Translator *tr, int c)
+static void SetLetterVowel(Translator *tr, int32_t c)
 {//==============================================
 	tr->letter_bits[c] = (tr->letter_bits[c] & 0x40) | 0x81;  // keep value for group 6 (front vowels e,i,y)
 }
 
-static void ResetLetterBits(Translator *tr, int groups)
+static void ResetLetterBits(Translator *tr, int32_t groups)
 {//====================================================
 // Clear all the specified groups
-	unsigned int ix;
-	unsigned int mask;
+	uint32_t ix;
+	uint32_t mask;
 
 	mask = ~groups;
 
@@ -159,9 +159,9 @@ static void ResetLetterBits(Translator *tr, int groups)
 	}
 }
 
-static void SetLetterBits(Translator *tr, int group, const char *string)
+static void SetLetterBits(Translator *tr, int32_t group, const char *string)
 {//=====================================================================
-	int bits;
+	int32_t bits;
 	unsigned char c;
 
 	bits = (1L << group);
@@ -169,10 +169,10 @@ static void SetLetterBits(Translator *tr, int group, const char *string)
 		tr->letter_bits[c] |= bits;
 }
 
-static void SetLetterBitsRange(Translator *tr, int group, int first, int last)
+static void SetLetterBitsRange(Translator *tr, int32_t group, int32_t first, int32_t last)
 {//===========================================================================
-	int bits;
-	int ix;
+	int32_t bits;
+	int32_t ix;
 
 	bits = (1L << group);
 	for(ix=first; ix<=last; ix++)
@@ -202,7 +202,7 @@ const unsigned char string_ordinal[] = {0xc2,0xba,0};  // masculine ordinal char
 static Translator* NewTranslator(void)
 {//===================================
 	Translator *tr;
-	int ix;
+	int32_t ix;
 	static const unsigned char stress_amps2[] = {18,18, 20,20, 20,22, 22,20 };
 	static const short stress_lengths2[8] = {182,140, 220,220, 220,240, 260,280};
 	static const wchar_t empty_wstring[1] = {0};
@@ -355,7 +355,7 @@ static const short pairs_ru[] = {
 
 
 
-static const unsigned int replace_cyrillic_latin[] =
+static const uint32_t replace_cyrillic_latin[] =
 	{0x430,'a',
 	0x431,'b',
 	0x446,'c',
@@ -459,7 +459,7 @@ void SetupTranslator(Translator *tr, const short *lengths, const unsigned char *
 
 Translator *SelectTranslator(const char *name)
 {//===========================================
-	int name2 = 0;
+	int32_t name2 = 0;
 	Translator *tr;
 
 	static const short stress_lengths_equal[8] = {230, 230,  230, 230,  0, 0,  230, 230};
@@ -1716,7 +1716,7 @@ static void Translator_Russian(Translator *tr)
 
 /*
 typedef struct {
-	int flags;
+	int32_t flags;
 	unsigned char stress;          // stress level of this vowel
 	unsigned char stress_highest;  // the highest stress level of a vowel in this word
 	unsigned char n_vowels;        // number of vowels in the word
@@ -1730,13 +1730,13 @@ typedef struct {
 #ifdef RUSSIAN2
 // This is now done in the phoneme data, ph_russian
 
-int ChangePhonemes_ru(Translator *tr, PHONEME_LIST2 *phlist, int n_ph, int index, PHONEME_TAB *ph, CHANGEPH *ch)
+int32_t ChangePhonemes_ru(Translator *tr, PHONEME_LIST2 *phlist, int32_t n_ph, int32_t index, PHONEME_TAB *ph, CHANGEPH *ch)
 {//=============================================================================================================
 // Called for each phoneme in the phoneme list, to allow a language to make changes
 // ph     The current phoneme
 
-	int variant;
-	int vowelix;
+	int32_t variant;
+	int32_t vowelix;
 	PHONEME_TAB *prev, *next;
 
 	if(ch->flags & 8)
@@ -1745,14 +1745,14 @@ int ChangePhonemes_ru(Translator *tr, PHONEME_LIST2 *phlist, int n_ph, int index
 
 	if(ph->type == phVOWEL)
 	{
-		int prestressed = ch->vowel_stressed==ch->vowel_this+1;  // the next vowel after this has the main stress
+		int32_t prestressed = ch->vowel_stressed==ch->vowel_this+1;  // the next vowel after this has the main stress
 
 		#define N_VOWELS_RU   11
-                static unsigned int vowels_ru[N_VOWELS_RU] = {'a','V','O','I',PH('I','#'),PH('E','#'),PH('E','2'),
+                static uint32_t vowels_ru[N_VOWELS_RU] = {'a','V','O','I',PH('I','#'),PH('E','#'),PH('E','2'),
 PH('V','#'),PH('I','3'),PH('I','2'),PH('E','3')};
 
 
-                static unsigned int vowel_replace[N_VOWELS_RU][6] = {
+                static uint32_t vowel_replace[N_VOWELS_RU][6] = {
                         // stressed, soft, soft-stressed, j+stressed, j+soft, j+soft-stressed
                 /*0*/        {'A', 'I', PH('j','a'),         'a', 'a', 'a'},                // a   Uses 3,4,5 columns.
                 /*1*/        {'A', 'V', PH('j','a'),         'a', 'V', 'a'},                // V   Uses 3,4,5 columns.
@@ -1796,8 +1796,8 @@ PH('V','#'),PH('I','3'),PH('I','2'),PH('E','3')};
 		}
 		// do we need a variant of this vowel, depending on the stress and adjacent phonemes ?
 		variant = -1;
-		int stressed = ch->flags & 2;
-		int soft=prev->phflags & phPALATAL;
+		int32_t stressed = ch->flags & 2;
+		int32_t soft=prev->phflags & phPALATAL;
 
 		if (soft && stressed)
 			variant = 2; else

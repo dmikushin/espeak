@@ -59,65 +59,65 @@
 voice_t *wvoice;
 
 FILE *f_log = NULL;
-int option_waveout = 0;
-static int option_harmonic1 = 10;   // 10
-int option_log_frames = 0;
-static int flutter_amp = 64;
+int32_t option_waveout = 0;
+static int32_t option_harmonic1 = 10;   // 10
+int32_t option_log_frames = 0;
+static int32_t flutter_amp = 64;
 
-static int general_amplitude = 60;
-static int consonant_amp = 26;   // 24
+static int32_t general_amplitude = 60;
+static int32_t consonant_amp = 26;   // 24
 
-int embedded_value[N_EMBEDDED_VALUES];
+int32_t embedded_value[N_EMBEDDED_VALUES];
 
-static int PHASE_INC_FACTOR;
-int samplerate = 0;       // this is set by Wavegeninit()
-int samplerate_native=0;
-extern int option_device_number;
-extern int option_quiet;
+static int32_t PHASE_INC_FACTOR;
+int32_t samplerate = 0;       // this is set by Wavegeninit()
+int32_t samplerate_native=0;
+extern int32_t option_device_number;
+extern int32_t option_quiet;
 
 static wavegen_peaks_t peaks[N_PEAKS];
-static int peak_harmonic[N_PEAKS];
-static int peak_height[N_PEAKS];
+static int32_t peak_harmonic[N_PEAKS];
+static int32_t peak_height[N_PEAKS];
 
-int echo_head;
-int echo_tail;
-int echo_amp = 0;
+int32_t echo_head;
+int32_t echo_tail;
+int32_t echo_amp = 0;
 short echo_buf[N_ECHO_BUF];
-static int echo_length = 0;   // period (in sample\) to ensure completion of echo at the end of speech, set in WavegenSetEcho()
+static int32_t echo_length = 0;   // period (in sample\) to ensure completion of echo at the end of speech, set in WavegenSetEcho()
 
-static int voicing;
+static int32_t voicing;
 static RESONATOR rbreath[N_PEAKS];
 
-static int harm_sqrt_n = 0;
+static int32_t harm_sqrt_n = 0;
 
 
 #define N_LOWHARM  30
-static int harm_inc[N_LOWHARM];    // only for these harmonics do we interpolate amplitude between steps
-static int *harmspect;
-static int hswitch=0;
-static int hspect[2][MAX_HARMONIC];         // 2 copies, we interpolate between then
-static int max_hval=0;
+static int32_t harm_inc[N_LOWHARM];    // only for these harmonics do we interpolate amplitude between steps
+static int32_t *harmspect;
+static int32_t hswitch=0;
+static int32_t hspect[2][MAX_HARMONIC];         // 2 copies, we interpolate between then
+static int32_t max_hval=0;
 
-static int nsamples=0;       // number to do
-static int modulation_type = 0;
-static int glottal_flag = 0;
-static int glottal_reduce = 0;
+static int32_t nsamples=0;       // number to do
+static int32_t modulation_type = 0;
+static int32_t glottal_flag = 0;
+static int32_t glottal_reduce = 0;
 
 
 WGEN_DATA wdata;
 
-static int amp_ix;
-static int amp_inc;
+static int32_t amp_ix;
+static int32_t amp_inc;
 static unsigned char *amplitude_env = NULL;
 
-static int samplecount=0;    // number done
-static int samplecount_start=0;  // count at start of this segment
-static int end_wave=0;      // continue to end of wave cycle
-static int wavephase;
-static int phaseinc;
-static int cycle_samples;         // number of samples in a cycle at current pitch
-static int cbytes;
-static int hf_factor;
+static int32_t samplecount=0;    // number done
+static int32_t samplecount_start=0;  // count at start of this segment
+static int32_t end_wave=0;      // continue to end of wave cycle
+static int32_t wavephase;
+static int32_t phaseinc;
+static int32_t cycle_samples;         // number of samples in a cycle at current pitch
+static int32_t cbytes;
+static int32_t hf_factor;
 
 static double minus_pi_t;
 static double two_pi_t;
@@ -126,19 +126,19 @@ static double two_pi_t;
 unsigned char *out_ptr;
 unsigned char *out_start;
 unsigned char *out_end;
-int outbuf_size = 0;
+int32_t outbuf_size = 0;
 
 // the queue of operations passed to wavegen from sythesize
 long64 wcmdq[N_WCMDQ][4];
-int wcmdq_head=0;
-int wcmdq_tail=0;
+int32_t wcmdq_head=0;
+int32_t wcmdq_tail=0;
 
 // pitch,speed,
-int embedded_default[N_EMBEDDED_VALUES]        = {0,    50,175,100,50, 0, 0, 0,175,0,0,0,0,0,0};
-static int embedded_max[N_EMBEDDED_VALUES]     = {0,0x7fff,750,300,99,99,99, 0,750,0,0,0,0,4,0};
+int32_t embedded_default[N_EMBEDDED_VALUES]        = {0,    50,175,100,50, 0, 0, 0,175,0,0,0,0,0,0};
+static int32_t embedded_max[N_EMBEDDED_VALUES]     = {0,0x7fff,750,300,99,99,99, 0,750,0,0,0,0,4,0};
 
 #define N_CALLBACK_IX N_WAV_BUF-2   // adjust this delay to match display with the currently spoken word
-int current_source_index=0;
+int32_t current_source_index=0;
 
 extern FILE *f_wave;
 
@@ -171,7 +171,7 @@ static unsigned char modulation_tab[N_ROUGHNESS][8] = {
 
 // Flutter table, to add natural variations to the pitch
 #define N_FLUTTER  0x170
-static int Flutter_inc;
+static int32_t Flutter_inc;
 static const unsigned char Flutter_tab[N_FLUTTER] = {
    0x80, 0x9b, 0xb5, 0xcb, 0xdc, 0xe8, 0xed, 0xec,
    0xe6, 0xdc, 0xce, 0xbf, 0xb0, 0xa3, 0x98, 0x90,
@@ -228,8 +228,8 @@ static const unsigned char Flutter_tab[N_FLUTTER] = {
 
 // waveform shape table for HF peaks, formants 6,7,8
 #define N_WAVEMULT 128
-static int wavemult_offset=0;
-static int wavemult_max=0;
+static int32_t wavemult_offset=0;
+static int32_t wavemult_max=0;
 
 // the presets are for 22050 Hz sample rate.
 // A different rate will need to recalculate the presets in WavegenInit()
@@ -262,10 +262,10 @@ unsigned char pitch_adjust_tab[MAX_PITCH_VALUE+1] = {
 
 
 #ifdef LOG_FRAMES
-static void LogMarker(int type, int value, int value2)
+static void LogMarker(int32_t type, int32_t value, int32_t value2)
 {//===================================================
 	char buf[20];
-	int *p;
+	int32_t *p;
 
 	if(option_log_frames == 0)
 		return;
@@ -277,7 +277,7 @@ static void LogMarker(int type, int value, int value2)
 		{
 			if(type == espeakEVENT_PHONEME)
 			{
-				p = (int *)buf;
+				p = (int32_t *)buf;
 				p[0] = value;
 				p[1] = value2;
 				buf[8] = 0;
@@ -313,15 +313,15 @@ void WcmdqStop()
 }
 
 
-int WcmdqFree()
+int32_t WcmdqFree()
 {//============
-	int i;
+	int32_t i;
 	i = wcmdq_head - wcmdq_tail;
 	if(i <= 0) i += N_WCMDQ;
 	return(i);
 }
 
-int WcmdqUsed()
+int32_t WcmdqUsed()
 {//============
    return(N_WCMDQ - WcmdqFree());
 }
@@ -391,13 +391,13 @@ static unsigned char pk_shape2[PEAKSHAPEW+1] = {
 static unsigned char *pk_shape;
 
 
-static void WavegenInitPkData(int which)
+static void WavegenInitPkData(int32_t which)
 {//=====================================
 // this is only needed to set up the presets for pk_shape1 and pk_shape2
 // These have already been pre-calculated and preset
 #ifdef deleted
-	int ix;
-	int p;
+	int32_t ix;
+	int32_t p;
 	float x;
 	float y[PEAKSHAPEW];
 	float maxy=0;
@@ -429,29 +429,29 @@ static void WavegenInitPkData(int which)
 #ifdef USE_PORTAUDIO
 // PortAudio interface
 
-static int userdata[4];
+static int32_t userdata[4];
 static PaError pa_init_err=0;
-static int out_channels=1;
+static int32_t out_channels=1;
 
 unsigned char *outbuffer = NULL;
-int outbuffer_size = 0;
+int32_t outbuffer_size = 0;
 
 
 #if USE_PORTAUDIO == 18
-static int WaveCallback(void *inputBuffer, void *outputBuffer,
+static int32_t WaveCallback(void *inputBuffer, void *outputBuffer,
 		unsigned long framesPerBuffer, PaTimestamp outTime, void *userData )
 #else
-static int WaveCallback(const void *inputBuffer, void *outputBuffer,
-		long unsigned int framesPerBuffer, const PaStreamCallbackTimeInfo *outTime,
+static int32_t WaveCallback(const void *inputBuffer, void *outputBuffer,
+		long uint32_t framesPerBuffer, const PaStreamCallbackTimeInfo *outTime,
 		PaStreamCallbackFlags flags, void *userData )
 #endif
 {
-	int ix;
-	int result;
+	int32_t ix;
+	int32_t result;
 	unsigned char *p;
 	unsigned char *out_buf;
 	unsigned char *out_end2;
-	int pa_size;
+	int32_t pa_size;
 
 	pa_size = framesPerBuffer*2;
 
@@ -517,7 +517,7 @@ static int WaveCallback(const void *inputBuffer, void *outputBuffer,
 #ifdef ARCH_BIG
 	{
 		// swap the order of bytes in each sound sample in the portaudio buffer
-		int c;
+		int32_t c;
 		unsigned char *buf_end;
 		out_buf = (unsigned char *)outputBuffer;
 		buf_end = out_buf + framesPerBuffer*2;
@@ -550,7 +550,7 @@ static int WaveCallback(const void *inputBuffer, void *outputBuffer,
 #endif
 	if(result != 0)
 	{
-		static int end_timer = 0;
+		static int32_t end_timer = 0;
 		if(end_timer == 0)
 			end_timer = 4;
 		if(end_timer > 0)
@@ -573,8 +573,8 @@ static int WaveCallback(const void *inputBuffer, void *outputBuffer,
    is broken */
 
 static PaError Pa_OpenDefaultStream2( PaStream** stream,
-                              int inputChannelCount,
-                              int outputChannelCount,
+                              int32_t inputChannelCount,
+                              int32_t outputChannelCount,
                               PaSampleFormat sampleFormat,
                               double sampleRate,
                               unsigned long framesPerBuffer,
@@ -611,7 +611,7 @@ static PaError Pa_OpenDefaultStream2( PaStream** stream,
 #endif
 
 
-int WavegenOpenSound()
+int32_t WavegenOpenSound()
 {//===================
 	PaError err, err2;
 	PaError active;
@@ -676,7 +676,7 @@ int WavegenOpenSound()
 
 
 
-int WavegenCloseSound()
+int32_t WavegenCloseSound()
 {//====================
 	PaError active;
 
@@ -706,7 +706,7 @@ int WavegenCloseSound()
 }
 
 
-int WavegenInitSound()
+int32_t WavegenInitSound()
 {//===================
 	PaError err;
 
@@ -724,24 +724,24 @@ int WavegenInitSound()
 	return(0);
 }
 #else
-int WavegenOpenSound()
+int32_t WavegenOpenSound()
 {//===================
 	return(0);
 }
-int WavegenCloseSound()
+int32_t WavegenCloseSound()
 {//====================
 	return(0);
 }
-int WavegenInitSound()
+int32_t WavegenInitSound()
 {//===================
 	return(0);
 }
 #endif
 
 
-void WavegenInit(int rate, int wavemult_fact)
+void WavegenInit(int32_t rate, int32_t wavemult_fact)
 {//==========================================
-	int  ix;
+	int32_t  ix;
 	double x;
 
 	if(wavemult_fact == 0)
@@ -796,9 +796,9 @@ remove("log-klatt");
 }  // end of WavegenInit
 
 
-int GetAmplitude(void)
+int32_t GetAmplitude(void)
 {//===================
-	int amp;
+	int32_t amp;
 
 	// normal, none, reduced, moderate, strong
 	static const unsigned char amp_emphasis[5] = {16, 16, 10, 16, 22};
@@ -811,8 +811,8 @@ int GetAmplitude(void)
 
 static void WavegenSetEcho(void)
 {//=============================
-	int delay;
-	int amp;
+	int32_t delay;
+	int32_t amp;
 
 	voicing = wvoice->voicing;
 	delay = wvoice->echo_delay;
@@ -852,7 +852,7 @@ static void WavegenSetEcho(void)
 
 
 
-int PeaksToHarmspect(wavegen_peaks_t *peaks, int pitch, int *htab, int control)
+int32_t PeaksToHarmspect(wavegen_peaks_t *peaks, int32_t pitch, int32_t *htab, int32_t control)
 {//============================================================================
 // Calculate the amplitude of each  harmonics from the formants
 // Only for formants 0 to 5
@@ -861,17 +861,17 @@ int PeaksToHarmspect(wavegen_peaks_t *peaks, int pitch, int *htab, int control)
 
    // pitch and freqs are Hz<<16
 
-	int f;
+	int32_t f;
 	wavegen_peaks_t *p;
-	int fp;   // centre freq of peak
-	int fhi;  // high freq of peak
-	int h;    // harmonic number
-	int pk;
-	int hmax;
-	int hmax_samplerate;      // highest harmonic allowed for the samplerate
-	int x;
-	int ix;
-	int h1;
+	int32_t fp;   // centre freq of peak
+	int32_t fhi;  // high freq of peak
+	int32_t h;    // harmonic number
+	int32_t pk;
+	int32_t hmax;
+	int32_t hmax_samplerate;      // highest harmonic allowed for the samplerate
+	int32_t x;
+	int32_t ix;
+	int32_t h1;
 
 #ifdef SPECT_EDITOR
 	if(harm_sqrt_n > 0)
@@ -917,8 +917,8 @@ int PeaksToHarmspect(wavegen_peaks_t *peaks, int pitch, int *htab, int control)
 	}
 
 {
-int y;
-int h2;
+int32_t y;
+int32_t h2;
 	// increase bass
 	y = peaks[1].height * 10;   // addition as a multiple of 1/256s
 	h2 = (1000<<16)/pitch;       // decrease until 1000Hz
@@ -987,9 +987,9 @@ static void AdvanceParameters()
 {//============================
 // Called every 64 samples to increment the formant freq, height, and widths
 
-	int x;
-	int ix;
-	static int Flutter_ix = 0;
+	int32_t x;
+	int32_t ix;
+	static int32_t Flutter_ix = 0;
 
 	// advance the pitch
 	wdata.pitch_ix += wdata.pitch_inc;
@@ -1068,7 +1068,7 @@ static double resonator(RESONATOR *r, double input)
 
 
 
-static void setresonator(RESONATOR *rp, int freq, int bwidth, int init)
+static void setresonator(RESONATOR *rp, int32_t freq, int32_t bwidth, int32_t init)
 {//====================================================================
 // freq    Frequency of resonator in Hz
 // bwidth  Bandwidth of resonator in Hz
@@ -1104,7 +1104,7 @@ static void setresonator(RESONATOR *rp, int freq, int bwidth, int init)
 void InitBreath(void)
 {//==================
 #ifndef PLATFORM_RISCOS
-	int ix;
+	int32_t ix;
 
 	minus_pi_t = -PI / samplerate;
 	two_pi_t = -2.0 * minus_pi_t;
@@ -1121,7 +1121,7 @@ void InitBreath(void)
 static void SetBreath()
 {//====================
 #ifndef PLATFORM_RISCOS
-	int pk;
+	int32_t pk;
 
 	if(wvoice->breath[0] == 0)
 		return;
@@ -1139,13 +1139,13 @@ static void SetBreath()
 }  // end of SetBreath
 
 
-static int ApplyBreath(void)
+static int32_t ApplyBreath(void)
 {//=========================
-	int value = 0;
+	int32_t value = 0;
 #ifndef PLATFORM_RISCOS
-	int noise;
-	int ix;
-	int amp;
+	int32_t noise;
+	int32_t ix;
+	int32_t amp;
 
 	// use two random numbers, for alternate formants
 	noise = (rand() & 0x3fff) - 0x2000;
@@ -1164,26 +1164,26 @@ static int ApplyBreath(void)
 
 
 
-int Wavegen()
+int32_t Wavegen()
 {//==========
 	unsigned short waveph;
 	unsigned short theta;
-	int total;
-	int h;
-	int ix;
-	int z, z1, z2;
-	int echo;
-	int ov;
-	static int maxh, maxh2;
-	int pk;
+	int32_t total;
+	int32_t h;
+	int32_t ix;
+	int32_t z, z1, z2;
+	int32_t echo;
+	int32_t ov;
+	static int32_t maxh, maxh2;
+	int32_t pk;
 	signed char c;
-	int sample;
-	int amp;
-	int modn_amp, modn_period;
-	static int agc = 256;
-	static int h_switch_sign = 0;
-	static int cycle_count = 0;
-	static int amplitude2 = 0;   // adjusted for pitch
+	int32_t sample;
+	int32_t amp;
+	int32_t modn_amp, modn_period;
+	static int32_t agc = 256;
+	static int32_t h_switch_sign = 0;
+	static int32_t cycle_count = 0;
+	static int32_t amplitude2 = 0;   // adjusted for pitch
 
 	// continue until the output buffer is full, or
 	// the required number of samples have been produced
@@ -1243,7 +1243,7 @@ int Wavegen()
 			wavephase += phaseinc;
 			if(wavephase < 0)
 			{
-				// sign has changed, reached a quiet point in the waveform
+				// sign has changed, reached a quiet point32_t in the waveform
 				cbytes = wavemult_offset - (cycle_samples)/2;
 				if(samplecount > nsamples)
 					return(0);
@@ -1438,10 +1438,10 @@ int Wavegen()
 }  //  end of Wavegen
 
 
-static int PlaySilence(int length, int resume)
+static int32_t PlaySilence(int32_t length, int32_t resume)
 {//===========================================
-	static int n_samples;
-	int value=0;
+	static int32_t n_samples;
+	int32_t value=0;
 
 	nsamples = 0;
 	samplecount = 0;
@@ -1475,11 +1475,11 @@ static int PlaySilence(int length, int resume)
 
 
 
-static int PlayWave(int length, int resume, unsigned char *data, int scale, int amp)
+static int32_t PlayWave(int32_t length, int32_t resume, unsigned char *data, int32_t scale, int32_t amp)
 {//=================================================================================
-	static int n_samples;
-	static int ix=0;
-	int value;
+	static int32_t n_samples;
+	static int32_t ix=0;
+	int32_t value;
 	signed char c;
 
 	if(resume==0)
@@ -1535,7 +1535,7 @@ static int PlayWave(int length, int resume, unsigned char *data, int scale, int 
 }
 
 
-static int SetWithRange0(int value, int max)
+static int32_t SetWithRange0(int32_t value, int32_t max)
 {//=========================================
 	if(value < 0)
 		return(0);
@@ -1547,9 +1547,9 @@ static int SetWithRange0(int value, int max)
 
 static void SetPitchFormants()
 {//===========================
-	int ix;
-	int factor = 256;
-	int pitch_value;
+	int32_t ix;
+	int32_t factor = 256;
+	int32_t pitch_value;
 
 	// adjust formants to give better results for a different voice pitch
 	if((pitch_value = embedded_value[EMBED_P]) > MAX_PITCH_VALUE)
@@ -1572,11 +1572,11 @@ static void SetPitchFormants()
 }
 
 
-void SetEmbedded(int control, int value)
+void SetEmbedded(int32_t control, int32_t value)
 {//=====================================
 	// there was an embedded command in the text at this point
-	int sign=0;
-	int command;
+	int32_t sign=0;
+	int32_t command;
 
 	command = control & 0x1f;
 	if((control & 0x60) == 0x60)
@@ -1642,7 +1642,7 @@ void WavegenSetVoice(voice_t *v)
 }
 
 
-static void SetAmplitude(int length, unsigned char *amp_env, int value)
+static void SetAmplitude(int32_t length, unsigned char *amp_env, int32_t value)
 {//====================================================================
 	amp_ix = 0;
 	if(length==0)
@@ -1657,12 +1657,12 @@ static void SetAmplitude(int length, unsigned char *amp_env, int value)
 }
 
 
-void SetPitch2(voice_t *voice, int pitch1, int pitch2, int *pitch_base, int *pitch_range)
+void SetPitch2(voice_t *voice, int32_t pitch1, int32_t pitch2, int32_t *pitch_base, int32_t *pitch_range)
 {//======================================================================================
-	int x;
-	int base;
-	int range;
-	int pitch_value;
+	int32_t x;
+	int32_t base;
+	int32_t range;
+	int32_t pitch_value;
 
 	if(pitch1 > pitch2)
 	{
@@ -1688,7 +1688,7 @@ void SetPitch2(voice_t *voice, int pitch1, int pitch2, int *pitch_base, int *pit
 }
 
 
-void SetPitch(int length, unsigned char *env, int pitch1, int pitch2)
+void SetPitch(int32_t length, unsigned char *env, int32_t pitch1, int32_t pitch2)
 {//==================================================================
 // length in samples
 
@@ -1725,17 +1725,17 @@ if(option_log_frames)
 
 
 
-void SetSynth(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v)
+void SetSynth(int32_t length, int32_t modn, frame_t *fr1, frame_t *fr2, voice_t *v)
 {//========================================================================
-	int ix;
+	int32_t ix;
 	DOUBLEX next;
-	int length2;
-	int length4;
-	int qix;
-	int cmd;
-	static int glottal_reduce_tab1[4] = {0x30, 0x30, 0x40, 0x50};  // vowel before [?], amp * 1/256
-//	static int glottal_reduce_tab1[4] = {0x30, 0x40, 0x50, 0x60};  // vowel before [?], amp * 1/256
-	static int glottal_reduce_tab2[4] = {0x90, 0xa0, 0xb0, 0xc0};  // vowel after [?], amp * 1/256
+	int32_t length2;
+	int32_t length4;
+	int32_t qix;
+	int32_t cmd;
+	static int32_t glottal_reduce_tab1[4] = {0x30, 0x30, 0x40, 0x50};  // vowel before [?], amp * 1/256
+//	static int32_t glottal_reduce_tab1[4] = {0x30, 0x40, 0x50, 0x60};  // vowel before [?], amp * 1/256
+	static int32_t glottal_reduce_tab2[4] = {0x90, 0xa0, 0xb0, 0xc0};  // vowel after [?], amp * 1/256
 
 #ifdef LOG_FRAMES
 if(option_log_frames)
@@ -1807,7 +1807,7 @@ if(option_log_frames)
 			peaks[ix].freq1 = (fr1->ffreq[ix] * v->freq[ix] + v->freqadd[ix]*256) << 8;
 			peaks[ix].freq = (int)peaks[ix].freq1;
 			next = (fr2->ffreq[ix] * v->freq[ix] + v->freqadd[ix]*256) << 8;
-			peaks[ix].freq_inc =  ((next - peaks[ix].freq1) * (STEPSIZE/4)) / length4;  // lower headroom for fixed point math
+			peaks[ix].freq_inc =  ((next - peaks[ix].freq1) * (STEPSIZE/4)) / length4;  // lower headroom for fixed point32_t math
 		}
 
 		peaks[ix].height1 = (fr1->fheight[ix] * v->height[ix]) << 6;
@@ -1838,7 +1838,7 @@ if(option_log_frames)
 }  // end of SetSynth
 
 
-static int Wavegen2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2)
+static int32_t Wavegen2(int32_t length, int32_t modulation, int32_t resume, frame_t *fr1, frame_t *fr2)
 {//====================================================================================
 	if(resume==0)
 		SetSynth(length, modulation, fr1, fr2, wvoice);
@@ -1846,10 +1846,10 @@ static int Wavegen2(int length, int modulation, int resume, frame_t *fr1, frame_
 	return(Wavegen());
 }
 
-void Write4Bytes(FILE *f, int value)
+void Write4Bytes(FILE *f, int32_t value)
 {//=================================
 // Write 4 bytes to a file, least significant first
-	int ix;
+	int32_t ix;
 
 	for(ix=0; ix<4; ix++)
 	{
@@ -1860,18 +1860,18 @@ void Write4Bytes(FILE *f, int value)
 
 
 
-int WavegenFill2(int fill_zeros)
+int32_t WavegenFill2(int32_t fill_zeros)
 {//============================
 // Pick up next wavegen commands from the queue
 // return: 0  output buffer has been filled
 // return: 1  input command queue is now empty
 
 	long64 *q;
-	int length;
-	int result;
-	int marker_type;
-	static int resume=0;
-	static int echo_complete=0;
+	int32_t length;
+	int32_t result;
+	int32_t marker_type;
+	static int32_t resume=0;
+	static int32_t echo_complete=0;
 
 	while(out_ptr < out_end)
 	{
@@ -2015,7 +2015,7 @@ int WavegenFill2(int fill_zeros)
 
 #ifdef INCLUDE_SONIC
 /* Speed up the audio samples with libsonic. */
-static int SpeedUp(short *outbuf, int length_in, int length_out, int end_of_text)
+static int32_t SpeedUp(short *outbuf, int32_t length_in, int32_t length_out, int32_t end_of_text)
 {//==============================================================================
 	if(length_in >0)
 	{
@@ -2044,9 +2044,9 @@ static int SpeedUp(short *outbuf, int length_in, int length_out, int end_of_text
 
 
 /* Call WavegenFill2, and then speed up the output samples. */
-int WavegenFill(int fill_zeros)
+int32_t WavegenFill(int32_t fill_zeros)
 {//============================
-	int finished;
+	int32_t finished;
 	unsigned char *p_start;
 
 	p_start = out_ptr;
@@ -2057,8 +2057,8 @@ int WavegenFill(int fill_zeros)
 #ifdef INCLUDE_SONIC
 	if(sonicSpeed > 1.0)
 	{
-		int length;
-		int max_length;
+		int32_t length;
+		int32_t max_length;
 
 		max_length = (out_end - p_start);
 		length =  2*SpeedUp((short *)p_start, (out_ptr-p_start)/2, max_length/2, finished);

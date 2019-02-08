@@ -70,39 +70,39 @@ enum {ONE_BILLION=1000000000};
 // create some wrappers for runtime detection
 
 // checked on wave_init
-static int pulse_running;
+static int32_t pulse_running;
 
 // wave.cpp (this file)
-int wave_port_init(int);
+int32_t wave_port_init(int);
 void* wave_port_open(const char* the_api);
 size_t wave_port_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSize);
-int wave_port_close(void* theHandler);
-int wave_port_is_busy(void* theHandler);
+int32_t wave_port_close(void* theHandler);
+int32_t wave_port_is_busy(void* theHandler);
 void wave_port_terminate();
 uint32_t wave_port_get_read_position(void* theHandler);
 uint32_t wave_port_get_write_position(void* theHandler);
 void wave_port_flush(void* theHandler);
 void wave_port_set_callback_is_output_enabled(t_wave_callback* cb);
 void* wave_port_test_get_write_buffer();
-int wave_port_get_remaining_time(uint32_t sample, uint32_t* time);
+int32_t wave_port_get_remaining_time(uint32_t sample, uint32_t* time);
 
 // wave_pulse.cpp
-int is_pulse_running();
-int wave_pulse_init(int);
+int32_t is_pulse_running();
+int32_t wave_pulse_init(int);
 void* wave_pulse_open(const char* the_api);
 size_t wave_pulse_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSize);
-int wave_pulse_close(void* theHandler);
-int wave_pulse_is_busy(void* theHandler);
+int32_t wave_pulse_close(void* theHandler);
+int32_t wave_pulse_is_busy(void* theHandler);
 void wave_pulse_terminate();
 uint32_t wave_pulse_get_read_position(void* theHandler);
 uint32_t wave_pulse_get_write_position(void* theHandler);
 void wave_pulse_flush(void* theHandler);
 void wave_pulse_set_callback_is_output_enabled(t_wave_callback* cb);
 void* wave_pulse_test_get_write_buffer();
-int wave_pulse_get_remaining_time(uint32_t sample, uint32_t* time);
+int32_t wave_pulse_get_remaining_time(uint32_t sample, uint32_t* time);
 
 // wrappers
-int wave_init(int srate) {
+int32_t wave_init(int32_t srate) {
   pulse_running = is_pulse_running();
 
   if (pulse_running)
@@ -125,14 +125,14 @@ size_t wave_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSiz
     return wave_port_write(theHandler, theMono16BitsWaveBuffer, theSize);
 }
 
-int wave_close(void* theHandler) {
+int32_t wave_close(void* theHandler) {
   if (pulse_running)
     return wave_pulse_close(theHandler);
   else
     return wave_port_close(theHandler);
 }
 
-int wave_is_busy(void* theHandler) {
+int32_t wave_is_busy(void* theHandler) {
   if (pulse_running)
     return wave_pulse_is_busy(theHandler);
   else
@@ -181,7 +181,7 @@ void* wave_test_get_write_buffer() {
     return wave_port_test_get_write_buffer();
 }
 
-int wave_get_remaining_time(uint32_t sample, uint32_t* time)
+int32_t wave_get_remaining_time(uint32_t sample, uint32_t* time)
 {
   if (pulse_running)
     return wave_pulse_get_remaining_time(sample, time);
@@ -216,11 +216,11 @@ static t_wave_callback* my_callback_is_output_enabled=NULL;
 static char myBuffer[BUFFER_LENGTH];
 static char* myRead=NULL;
 static char* myWrite=NULL;
-static int out_channels=1;
-static int my_stream_could_start=0;
-static int wave_samplerate;
+static int32_t out_channels=1;
+static int32_t my_stream_could_start=0;
+static int32_t wave_samplerate;
 
-static int mInCallbackFinishedState = false;
+static int32_t mInCallbackFinishedState = false;
 #if (USE_PORTAUDIO == 18)
 static PortAudioStream *pa_stream=NULL;
 #endif
@@ -229,7 +229,7 @@ static struct PaStreamParameters myOutputParameters;
 static PaStream *pa_stream=NULL;
 #endif
 
-static int userdata[4];
+static int32_t userdata[4];
 static PaError pa_init_err=0;
 
 // time measurement
@@ -254,11 +254,11 @@ static void init_buffer()
   SHOW("init_buffer > myRead=0x%x, myWrite=0x%x, BUFFER_LENGTH=0x%x, myReadPosition = myWritePosition = 0\n", (int)myRead, (int)myWrite, BUFFER_LENGTH);
 }
 
-static unsigned int get_used_mem()
+static uint32_t get_used_mem()
 {
   char* aRead = myRead;
   char* aWrite = myWrite;
-  unsigned int used = 0;
+  uint32_t used = 0;
 
   assert ((aRead >= myBuffer)
 	  && (aRead <= myBuffer + BUFFER_LENGTH)
@@ -314,15 +314,15 @@ static void start_stream()
 ** that could mess up the system like calling malloc() or free().
 */
 #if USE_PORTAUDIO == 18
-static int pa_callback(void *inputBuffer, void *outputBuffer,
+static int32_t pa_callback(void *inputBuffer, void *outputBuffer,
 			unsigned long framesPerBuffer, PaTimestamp outTime, void *userData )
 #else
-  static int pa_callback(const void *inputBuffer, void *outputBuffer,
-			  long unsigned int framesPerBuffer, const PaStreamCallbackTimeInfo *outTime,
+  static int32_t pa_callback(const void *inputBuffer, void *outputBuffer,
+			  long uint32_t framesPerBuffer, const PaStreamCallbackTimeInfo *outTime,
 			  PaStreamCallbackFlags flags, void *userData )
 #endif
 {
-	int aResult=0; // paContinue
+	int32_t aResult=0; // paContinue
 	char* aWrite = myWrite;
 	size_t n = out_channels*sizeof(uint16_t)*framesPerBuffer;
 
@@ -362,13 +362,13 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 		}
 		else if ((size_t)(aWrite + BUFFER_LENGTH - myRead) >= n)
 		{
-			int aTopMem = myBuffer + BUFFER_LENGTH - myRead;
+			int32_t aTopMem = myBuffer + BUFFER_LENGTH - myRead;
 			if (aTopMem)
 			{
 				SHOW("pa_callback > myRead=0x%x, aTopMem=0x%x\n",(int)myRead, (int)aTopMem);
 				memcpy(outputBuffer, myRead, aTopMem);
 			}
-			int aRest = n - aTopMem;
+			int32_t aRest = n - aTopMem;
 			if (aRest)
 			{
 				SHOW("pa_callback > myRead=0x%x, aRest=0x%x\n",(int)myRead, (int)aRest);
@@ -382,13 +382,13 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 			SHOW_TIME("pa_callback > underflow");
 			aResult=1; // paComplete;
 
-			int aTopMem = myBuffer + BUFFER_LENGTH - myRead;
+			int32_t aTopMem = myBuffer + BUFFER_LENGTH - myRead;
 			if (aTopMem)
 			{
 				SHOW("pa_callback > myRead=0x%x, aTopMem=0x%x\n",(int)myRead, (int)aTopMem);
 				memcpy(outputBuffer, myRead, aTopMem);
 			}
-			int aRest = aWrite - myBuffer;
+			int32_t aRest = aWrite - myBuffer;
 			if (aRest)
 			{
 				SHOW("pa_callback > myRead=0x%x, aRest=0x%x\n",(int)myRead, (int)aRest);
@@ -410,7 +410,7 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
   // #if USE_PORTAUDIO == 18
   //   if(aBufferEmpty)
   //     {
-  //       static int end_timer = 0;
+  //       static int32_t end_timer = 0;
   //       if(end_timer == 0)
   // 	end_timer = 4;
   //       if(end_timer > 0)
@@ -426,7 +426,7 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 #ifdef ARCH_BIG
 	{
 		// BIG-ENDIAN, swap the order of bytes in each sound sample in the portaudio buffer
-		int c;
+		int32_t c;
 		unsigned char *out_ptr;
 		unsigned char *out_end;
 		out_ptr = (unsigned char *)outputBuffer;
@@ -466,7 +466,7 @@ void wave_flush(void* theHandler)
 
 //<wave_open_sound
 
-static int wave_open_sound()
+static int32_t wave_open_sound()
 {
   ENTER("wave_open_sound");
 
@@ -603,7 +603,7 @@ static int wave_open_sound()
 //<select_device
 
 #if (USE_PORTAUDIO == 19)
-static void update_output_parameters(int selectedDevice, const PaDeviceInfo *deviceInfo)
+static void update_output_parameters(int32_t selectedDevice, const PaDeviceInfo *deviceInfo)
 {
   //  const PaDeviceInfo *pdi = Pa_GetDeviceInfo(i);
   myOutputParameters.device = selectedDevice;
@@ -643,7 +643,7 @@ static void select_device(const char* the_api)
 	ENTER("select_device");
 
 #if (USE_PORTAUDIO == 19)
-	int numDevices = Pa_GetDeviceCount();
+	int32_t numDevices = Pa_GetDeviceCount();
 	if( numDevices < 0 )
 	{
 		SHOW( "ERROR: Pa_CountDevices returned 0x%x\n", numDevices );
@@ -727,7 +727,7 @@ static void select_device(const char* the_api)
 //>
 
 
-// int wave_Close(void* theHandler)
+// int32_t wave_Close(void* theHandler)
 // {
 //   SHOW_TIME("WaveCloseSound");
 
@@ -767,7 +767,7 @@ void wave_set_callback_is_output_enabled(t_wave_callback* cb)
 //<wave_init
 
 // TBD: the arg could be "alsa", "oss",...
-int wave_init(int srate)
+int32_t wave_init(int32_t srate)
 {
   ENTER("wave_init");
   PaError err;
@@ -793,7 +793,7 @@ int wave_init(int srate)
 void* wave_open(const char* the_api)
 {
   ENTER("wave_open");
-  static int once=0;
+  static int32_t once=0;
 
   // TBD: the_api (e.g. "alsa") is not used at the moment
   // select_device is called once
@@ -812,7 +812,7 @@ void* wave_open(const char* the_api)
 static size_t copyBuffer(char* dest, char* src, const size_t theSizeInBytes)
 {
 	size_t bytes_written = 0;
-	unsigned int i = 0;
+	uint32_t i = 0;
 	uint16_t* a_dest = NULL;
 	uint16_t* a_src = NULL;
 
@@ -973,11 +973,11 @@ size_t wave_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSiz
 //>
 //<wave_close
 
-int wave_close(void* theHandler)
+int32_t wave_close(void* theHandler)
 {
   SHOW_TIME("wave_close > ENTER");
 
-  static int aStopStreamCount = 0;
+  static int32_t aStopStreamCount = 0;
 
 #if (USE_PORTAUDIO == 19)
   if( pa_stream == NULL )
@@ -1080,7 +1080,7 @@ int wave_close(void* theHandler)
   return 0;
 }
 
-// int wave_close(void* theHandler)
+// int32_t wave_close(void* theHandler)
 // {
 //   ENTER("wave_close");
 
@@ -1116,7 +1116,7 @@ int wave_close(void* theHandler)
 //>
 //<wave_is_busy
 
-int wave_is_busy(void* theHandler)
+int32_t wave_is_busy(void* theHandler)
 {
   PaError active=0;
 
@@ -1165,7 +1165,7 @@ uint32_t wave_get_write_position(void* theHandler)
   return myWritePosition;
 }
 
-int wave_get_remaining_time(uint32_t sample, uint32_t* time)
+int32_t wave_get_remaining_time(uint32_t sample, uint32_t* time)
 {
   double a_time=0;
 
@@ -1206,20 +1206,20 @@ void *wave_test_get_write_buffer()
 // notdef USE_PORTAUDIO
 
 
-int wave_init(int srate) {return 1;}
+int32_t wave_init(int32_t srate) {return 1;}
 void* wave_open(const char* the_api) {return (void *)1;}
 size_t wave_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSize) {return theSize;}
-int wave_close(void* theHandler) {return 0;}
-int wave_is_busy(void* theHandler) {return 0;}
+int32_t wave_close(void* theHandler) {return 0;}
+int32_t wave_is_busy(void* theHandler) {return 0;}
 void wave_terminate() {}
 uint32_t wave_get_read_position(void* theHandler) {return 0;}
 uint32_t wave_get_write_position(void* theHandler) {return 0;}
 void wave_flush(void* theHandler) {}
-typedef int (t_wave_callback)(void);
+typedef int32_t (t_wave_callback)(void);
 void wave_set_callback_is_output_enabled(t_wave_callback* cb) {}
 extern void* wave_test_get_write_buffer() {return NULL;}
 
-int wave_get_remaining_time(uint32_t sample, uint32_t* time)
+int32_t wave_get_remaining_time(uint32_t sample, uint32_t* time)
 {
 	if (!time) return(-1);
 	*time = (uint32_t)0;
@@ -1245,7 +1245,7 @@ void clock_gettime2(struct timespec *ts)
   ts->tv_nsec = tv.tv_usec*1000;
 }
 
-void add_time_in_ms(struct timespec *ts, int time_in_ms)
+void add_time_in_ms(struct timespec *ts, int32_t time_in_ms)
 {
   if (!ts)
     {

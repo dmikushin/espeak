@@ -51,20 +51,18 @@
 
 
 
-extern void Write4Bytes(FILE *f, int value);
+extern void Write4Bytes(FILE *f, int32_t value);
 char path_home[N_PATH_HOME];    // this is the espeak-data directory
 
 char filetype[5];
 char wavefile[200];
-int (* uri_callback)(int, const char *, const char *) = NULL;
-int (* phoneme_callback)(const char *) = NULL;
 
 FILE *f_wave = NULL;
-int quiet = 0;
-unsigned int samples_total = 0;
-unsigned int samples_split = 0;
-unsigned int wavefile_count = 0;
-int end_of_sentence = 0;
+int32_t quiet = 0;
+uint32_t samples_total = 0;
+uint32_t samples_split = 0;
+uint32_t wavefile_count = 0;
+int32_t end_of_sentence = 0;
 
 static const char *help_text =
 "\nspeak [options] [\"<words>\"]\n\n"
@@ -124,44 +122,14 @@ USHORT voice_pcnt[N_PEAKS+1][3];
 
 
 
-int GetFileLength(const char *filename)
-{//====================================
-	struct stat statbuf;
-
-	if(stat(filename,&statbuf) != 0)
-		return(0);
-
-	if((statbuf.st_mode & S_IFMT) == S_IFDIR)
-//	if(S_ISDIR(statbuf.st_mode))
-		return(-2);  // a directory
-
-	return(statbuf.st_size);
-}  // end of GetFileLength
-
-
-char *Alloc(int size)
-{//==================
-	char *p;
-	if((p = (char *)malloc(size)) == NULL)
-		fprintf(stderr,"Can't allocate memory\n");
-	return(p);
-}
-
-void Free(void *ptr)
-{//=================
-	if(ptr != NULL)
-		free(ptr);
-}
-
-
 void DisplayVoices(FILE *f_out, char *language)
 {//============================================
-	int ix;
+	int32_t ix;
 	const char *p;
-	int len;
-	int count;
-	int c;
-	int j;
+	int32_t len;
+	int32_t count;
+	int32_t c;
+	int32_t j;
 	const espeak_VOICE *v;
 	const char *lang_name;
 	char age_buf[12];
@@ -230,7 +198,7 @@ void WVoiceChanged(voice_t *wvoice)
 {
 }
 
-static int OpenWaveFile(const char *path, int rate)
+static int32_t OpenWaveFile(const char *path, int32_t rate)
 //=================================================
 {
 	// Set the length of 0x7ffff000 for --stdout
@@ -277,7 +245,7 @@ static int OpenWaveFile(const char *path, int rate)
 static void CloseWaveFile()
 //=========================
 {
-   unsigned int pos;
+   uint32_t pos;
 
    if((f_wave == NULL) || (f_wave == stdout))
       return;
@@ -300,7 +268,7 @@ static void CloseWaveFile()
 
 
 
-void MarkerEvent(int type, unsigned int char_position, int value, int value2, unsigned char *out_ptr)
+void MarkerEvent(int32_t type, uint32_t char_position, int32_t value, int32_t value2, unsigned char *out_ptr)
 {//======================================================================================
 // Do nothing in the command-line version.
 	if(type == 2)
@@ -308,9 +276,9 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 }  // end of MarkerEvent
 
 
-static int WavegenFile(void)
+static int32_t WavegenFile(void)
 {//=========================
-	int finished;
+	int32_t finished;
 	unsigned char wav_outbuf[1024];
 	char fname[210];
 
@@ -411,11 +379,11 @@ static void init_path(char *argv0, char *path_specified)
 }
 
 
-static int initialise(void)
+static int32_t initialise(void)
 {//========================
-	int param;
-	int result;
-	int srate = 22050;   // default sample rate
+	int32_t param;
+	int32_t result;
+	int32_t srate = 22050;   // default sample rate
 
 	// It seems that the wctype functions don't work until the locale has been set
 	// to something other than the default "C".  Then, not only Latin1 but also the
@@ -453,7 +421,7 @@ static int initialise(void)
 }
 
 
-static void StopSpeak(int unused)
+static void StopSpeak(int32_t unused)
 {//==============================
 	signal(SIGINT,SIG_IGN);
 	// DEBUG
@@ -468,12 +436,12 @@ static void StopSpeak(int unused)
 #ifdef NEED_GETOPT
 	struct option {
 		char *name;
-		int has_arg;
-		int *flag;
-		int val;
+		int32_t has_arg;
+		int32_t *flag;
+		int32_t val;
 	};
-	int optind;
-	static int optional_argument;
+	int32_t optind;
+	static int32_t optional_argument;
 	static const char *arg_opts = "abfgklpsvw";  // which options have arguments
 	static char *opt_string="";
 #define no_argument 0
@@ -481,7 +449,7 @@ static void StopSpeak(int unused)
 #define optional_argument 2
 #endif
 
-int main (int argc, char **argv)
+int32_t main (int32_t argc, char **argv)
 //==============================
 {
 	static struct option long_options[] =
@@ -514,18 +482,18 @@ int main (int argc, char **argv)
 	const char *p_text=NULL;
 	char *data_path = NULL;   // use default path for espeak-data
 
-	int option_index = 0;
-	int c;
-	int value;
-	int speed=175;
-	int ix;
+	int32_t option_index = 0;
+	int32_t c;
+	int32_t value;
+	int32_t speed=175;
+	int32_t ix;
 	char *optarg2;
-	int amp = 100;     // default
-	int wordgap = 0;
-	int speaking = 0;
-	int flag_stdin = 0;
-	int flag_compile = 0;
-	int pitch_adjustment = 50;
+	int32_t amp = 100;     // default
+	int32_t wordgap = 0;
+	int32_t speaking = 0;
+	int32_t flag_stdin = 0;
+	int32_t flag_compile = 0;
+	int32_t pitch_adjustment = 50;
 	espeak_VOICE voice_select;
 	char filename[200];
 	char voicename[40];
@@ -548,7 +516,7 @@ int main (int argc, char **argv)
 	opt_string = "";
 	while(optind < argc)
 	{
-		int len;
+		int32_t len;
 		char *p;
 
 		if((c = *opt_string) == 0)

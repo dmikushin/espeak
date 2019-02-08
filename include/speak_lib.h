@@ -88,14 +88,14 @@ typedef enum {
 
 typedef struct {
 	espeak_EVENT_TYPE type;
-	unsigned int unique_identifier; // message identifier (or 0 for key or character)
-	int text_position;    // the number of characters from the start of the text
-	int length;           // word length, in characters (for espeakEVENT_WORD)
-	int audio_position;   // the time in mS within the generated speech output data
-	int sample;           // sample id (internal use)
+	uint32_t unique_identifier; // message identifier (or 0 for key or character)
+	int32_t text_position;    // the number of characters from the start of the text
+	int32_t length;           // word length, in characters (for espeakEVENT_WORD)
+	int32_t audio_position;   // the time in mS within the generated speech output data
+	int32_t sample;           // sample id (internal use)
 	void* user_data;      // pointer supplied by the calling program
 	union {
-		int number;        // used for WORD and SENTENCE events.
+		int32_t number;        // used for WORD and SENTENCE events.
 		const char *name;  // used for MARK and PLAY events.  UTF8 string
 		char string[8];    // used for phoneme names (UTF8). Terminated by a zero byte unless the name needs the full 8 bytes.
 	} id;
@@ -182,7 +182,7 @@ typedef enum {
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output, int buflength, const char *path, int options);
+ESPEAK_API int32_t espeak_Initialize(espeak_AUDIO_OUTPUT output, int32_t buflength, const char *path, int32_t options);
 /* Must be called before any synthesis functions are called.
    output: the audio data can either be played by eSpeak or passed back by the SynthCallback function.
 
@@ -199,7 +199,7 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output, int buflength, cons
    Returns: sample rate in Hz, or -1 (EE_INTERNAL_ERROR).
 */
 
-typedef int (t_espeak_callback)(short*, int, espeak_EVENT*);
+typedef int32_t (t_espeak_callback)(short*, int, espeak_EVENT*);
 
 #ifdef __cplusplus
 extern "C"
@@ -212,7 +212,7 @@ ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback);
 
    The callback function is of the form:
 
-int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
+int32_t SynthCallback(short *wav, int32_t numsamples, espeak_EVENT *events);
 
    wav:  is the speech sound data which has been produced.
       NULL indicates that the synthesis has been completed.
@@ -232,7 +232,7 @@ int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API void espeak_SetUriCallback(int (*UriCallback)(int, const char*, const char*));
+ESPEAK_API void espeak_SetUriCallback(int32_t (*UriCallback)(int, const char*, const char*));
 /* This function may be called before synthesis functions are used, in order to deal with
    <audio> tags.  It specifies a callback function which is called when an <audio> element is
    encountered and allows the calling program to indicate whether the sound file which
@@ -240,7 +240,7 @@ ESPEAK_API void espeak_SetUriCallback(int (*UriCallback)(int, const char*, const
 
    The callback function is of the form:
 
-int UriCallback(int type, const char *uri, const char *base);
+int32_t UriCallback(int32_t type, const char *uri, const char *base);
 
    type:  type of callback event.  Currently only 1= <audio> element
 
@@ -249,7 +249,7 @@ int UriCallback(int type, const char *uri, const char *base);
    base:  the "xml:base" attribute (if any) from the <speak> element
 
    Return: 1=don't play the sound, but speak the text alternative.
-           0=place a PLAY event in the event list at the point where the <audio> element
+           0=place a PLAY event in the event list at the pointwhere the <audio> element
              occurs.  The calling program can then play the sound at that point.
 */
 
@@ -275,11 +275,11 @@ extern "C"
 #endif
 ESPEAK_API espeak_ERROR espeak_Synth(const void *text,
 	size_t size,
-	unsigned int position,
+	uint32_t position,
 	espeak_POSITION_TYPE position_type,
-	unsigned int end_position,
-	unsigned int flags,
-	unsigned int* unique_identifier,
+	uint32_t end_position,
+	uint32_t flags,
+	uint32_t * unique_identifier,
 	void* user_data);
 /* Synthesize speech for the specified text.  The speech sound data is passed to the calling
    program in buffers by means of the callback function specified by espeak_SetSynthCallback(). The command is asynchronous: it is internally buffered and returns as soon as possible. If espeak_Initialize was previously called with AUDIO_OUTPUT_PLAYBACK as argument, the sound data are played by eSpeak.
@@ -316,7 +316,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text,
       espeakENDPAUSE  If set then a sentence pause is added at the end of the text.  If not set then
          this pause is suppressed.
 
-   unique_identifier: This must be either NULL, or point to an integer variable to
+   unique_identifier: This must be either NULL, or pointto an integer variable to
        which eSpeak writes a message identifier number.
        eSpeak includes this number in espeak_EVENT messages which are the result of
        this call of espeak_Synth().
@@ -336,15 +336,15 @@ extern "C"
 ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text,
 	size_t size,
 	const char *index_mark,
-	unsigned int end_position,
-	unsigned int flags,
-	unsigned int* unique_identifier,
+	uint32_t end_position,
+	uint32_t flags,
+	uint32_t * unique_identifier,
 	void* user_data);
 /* Synthesize speech for the specified text.  Similar to espeak_Synth() but the start position is
    specified by the name of a <mark> element in the text.
 
    index_mark:  The "name" attribute of a <mark> element within the text which specified the
-      point at which synthesis starts.  UTF8 string.
+      pointat which synthesis starts.  UTF8 string.
 
    For the other parameters, see espeak_Synth()
 
@@ -416,7 +416,7 @@ typedef enum {
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int value, int relative);
+ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int32_t value, int32_t relative);
 /* Sets the value of the specified parameter.
    relative=0   Sets the absolute value of the parameter.
    relative=1   Sets a relative value of the parameter.
@@ -453,7 +453,7 @@ ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int valu
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current);
+ESPEAK_API int32_t espeak_GetParameter(espeak_PARAMETER parameter, int32_t current);
 /* current=0  Returns the default value of the specified parameter.
    current=1  Returns the current value of the specified parameter, as set by SetParameter()
 */
@@ -476,7 +476,7 @@ ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist);
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream);
+ESPEAK_API void espeak_SetPhonemeTrace(int32_t value, FILE *stream);
 /* Controls the output of phoneme symbols for the text
    value=0  No phoneme output (default)
    value=1  Output the translated phoneme symbols for the text
@@ -489,7 +489,7 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream);
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int textmode, int phonememode);
+ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int32_t textmode, int32_t phonememode);
 /* Translates text into phonemes.  Call espeak_SetVoiceByName() first, to select a language.
 
    It returns a pointer to a character string which contains the phonemes for the text up to
@@ -520,7 +520,7 @@ ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int textmode,
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API void espeak_CompileDictionary(const char *path, FILE *log, int flags);
+ESPEAK_API void espeak_CompileDictionary(const char *path, FILE *log, int32_t flags);
 /* Compile pronunciation dictionary for a language which corresponds to the currently
    selected voice.  The required voice should be selected before calling this function.
 
@@ -545,7 +545,7 @@ typedef struct {
 	unsigned char age;     // 0=not specified, or age in years
 	unsigned char variant; // only used when passed as a parameter to espeak_SetVoiceByProperties
 	unsigned char xx1;     // for internal use
-	int score;       // for internal use
+	int32_t score;       // for internal use
 	void *spare;     // for internal use
 } espeak_VOICE;
 
@@ -639,7 +639,7 @@ ESPEAK_API espeak_ERROR espeak_Cancel(void);
 #ifdef __cplusplus
 extern "C"
 #endif
-ESPEAK_API int espeak_IsPlaying(void);
+ESPEAK_API int32_t espeak_IsPlaying(void);
 /* Returns 1 if audio is played, 0 otherwise.
 */
 

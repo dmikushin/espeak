@@ -31,7 +31,7 @@ extern "C"
  * error reason.  If this is successful, then close_MBR() must be called
  * before init_MBR() can be called again.
  */
-int init_MBR(const char *voice_path);
+int32_t init_MBR(const char *voice_path);
 
 /*
  * Stop mbrola and release any resources.  It is necessary to call
@@ -46,7 +46,7 @@ void close_MBR(void);
  * on success, or 0 on failure. If not successful, lastErrorStr_MBR() will
  * provide the error reason.
  */
-int reset_MBR();
+int32_t reset_MBR();
 
 /*
  * Return at most 'nb_samples' audio samples into 'buffer'. The returned
@@ -54,14 +54,14 @@ int reset_MBR();
  * If not successful, lastErrorStr_MBR() will provide the error reason.
  * Samples are always 16-bit little endian.
  */
-int read_MBR(void *buffer, int nb_samples);
+int32_t read_MBR(void *buffer, int32_t nb_samples);
 
 /*
  * Write a NULL terminated string of phoneme in the input buffer.
  * Return the number of chars actually written, or -1 on error.
  * If not successful, lastErrorStr_MBR() will provide the error reason.
  */
-int write_MBR(const char *data);
+int32_t write_MBR(const char *data);
 
 /*
  * Send a flush command to the mbrola input stream.
@@ -69,12 +69,12 @@ int write_MBR(const char *data);
  * or 0 on failure. If not successful, lastErrorStr_MBR() will provide
  * the error reason.
  */
-int flush_MBR(void);
+int32_t flush_MBR(void);
 
 /*
  * Return the audio sample frequency of the used voice database.
  */
-int getFreq_MBR(void);
+int32_t getFreq_MBR(void);
 
 /*
  * Overall volume.
@@ -89,7 +89,7 @@ void setVolumeRatio_MBR(float value);
  * calls to lastErrorStr_MBR() will return the same message unless it
  * is explicitly cleared with resetError_MBR().
  */
-int lastErrorStr_MBR(char *buffer, int bufsize);
+int32_t lastErrorStr_MBR(char *buffer, int32_t bufsize);
 
 /*
  * Clear any pending error message.
@@ -99,7 +99,7 @@ void resetError_MBR(void);
 /*
  * Tolerance to missing diphones (always active so this is ignored)
  */
-static inline void setNoError_MBR(int no_error) { }
+static inline void setNoError_MBR(int32_t no_error) { }
 
 #ifdef __cplusplus
 }

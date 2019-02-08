@@ -23,27 +23,27 @@ typedef struct {
 	char v_name[40];
 	char language_name[20];
 
-	int phoneme_tab_ix;  // phoneme table number
-	int pitch_base;    // Hz<<12
-	int pitch_range;   // standard = 0x1000
+	int32_t phoneme_tab_ix;  // phoneme table number
+	int32_t pitch_base;    // Hz<<12
+	int32_t pitch_range;   // standard = 0x1000
 
-	int speedf1;
-	int speedf2;
-	int speedf3;
+	int32_t speedf1;
+	int32_t speedf2;
+	int32_t speedf3;
 
-	int speed_percent;      // adjust the WPM speed by this percentage
-	int flutter;
-	int roughness;
-	int echo_delay;
-	int echo_amp;
-	int n_harmonic_peaks;  // highest formant which is formed from adding harmonics
-	int peak_shape;        // alternative shape for formant peaks (0=standard 1=squarer)
-	int voicing;           // 100% = 64, level of formant-synthesized sound
-	int formant_factor;      // adjust nominal formant frequencies by this  because of the voice's pitch (256ths)
-	int consonant_amp;     // amplitude of unvoiced consonants
-	int consonant_ampv;    // amplitude of the noise component of voiced consonants
-	int samplerate;
-	int klattv[8];
+	int32_t speed_percent;      // adjust the WPM speed by this percentage
+	int32_t flutter;
+	int32_t roughness;
+	int32_t echo_delay;
+	int32_t echo_amp;
+	int32_t n_harmonic_peaks;  // highest formant which is formed from adding harmonics
+	int32_t peak_shape;        // alternative shape for formant peaks (0=standard 1=squarer)
+	int32_t voicing;           // 100% = 64, level of formant-synthesized sound
+	int32_t formant_factor;      // adjust nominal formant frequencies by this  because of the voice's pitch (256ths)
+	int32_t consonant_amp;     // amplitude of unvoiced consonants
+	int32_t consonant_ampv;    // amplitude of the noise component of voiced consonants
+	int32_t samplerate;
+	int32_t klattv[8];
 
 	// parameters used by Wavegen
 	short freq[N_PEAKS];    // 100% = 256
@@ -56,8 +56,8 @@ typedef struct {
 	short height2[N_PEAKS];  // 100% = 256
 	short width2[N_PEAKS];   // 100% = 256
 
-	int breath[N_PEAKS];  // amount of breath for each formant. breath[0] indicates whether any are set.
-	int breathw[N_PEAKS];  // width of each breath formant
+	int32_t breath[N_PEAKS];  // amount of breath for each formant. breath[0] indicates whether any are set.
+	int32_t breathw[N_PEAKS];  // width of each breath formant
 
 	// This table provides the opportunity for tone control.
 	// Adjustment of harmonic amplitudes, steps of 8Hz
@@ -73,15 +73,15 @@ extern USHORT voice_pcnt[N_PEAKS+1][3];
 extern espeak_VOICE current_voice_selected;
 
 extern voice_t *voice;
-extern int tone_points[12];
+extern int32_t tone_points[12];
 
-const char *SelectVoice(espeak_VOICE *voice_select, int *found);
+const char *SelectVoice(espeak_VOICE *voice_select, int32_t *found);
 espeak_VOICE *SelectVoiceByName(espeak_VOICE **voices, const char *name);
-voice_t *LoadVoice(const char *voice_name, int control);
-voice_t *LoadVoiceVariant(const char *voice_name, int variant);
+voice_t *LoadVoice(const char *voice_name, int32_t control);
+voice_t *LoadVoiceVariant(const char *voice_name, int32_t variant);
 void DoVoiceChange(voice_t *v);
 void WVoiceChanged(voice_t *wvoice);
 void WavegenSetVoice(voice_t *v);
-void ReadTonePoints(char *string, int *tone_pts);
-void VoiceReset(int control);
+void ReadTonePoints(char *string, int32_t *tone_pts);
+void VoiceReset(int32_t control);
 

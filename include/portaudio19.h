@@ -48,7 +48,7 @@ extern "C"
 /** Retrieve the release number of the currently running PortAudio build,
  eg 1900.
 */
-int Pa_GetVersion( void );
+int32_t Pa_GetVersion( void );
 
 
 /** Retrieve a textual description of the current PortAudio build,
@@ -61,7 +61,7 @@ const char* Pa_GetVersionText( void );
  Note that with the exception of paNoError, all PaErrorCodes are negative.
 */
 
-typedef int PaError;
+typedef int32_t PaError;
 typedef enum PaErrorCode
 {
     paNoError = 0,
@@ -151,7 +151,7 @@ PaError Pa_Terminate( void );
 
  @see Pa_DeviceCount, paNoDevice, paUseHostApiSpecificDeviceSpecification
 */
-typedef int PaDeviceIndex;
+typedef int32_t PaDeviceIndex;
 
 
 /** A special PaDeviceIndex value indicating that no device is available,
@@ -177,7 +177,7 @@ typedef int PaDeviceIndex;
 
  @see Pa_GetHostApiCount
 */
-typedef int PaHostApiIndex;
+typedef int32_t PaHostApiIndex;
 
 
 /** Retrieve the number of available host APIs. Even if a host API is
@@ -238,7 +238,7 @@ typedef enum PaHostApiTypeId
 typedef struct PaHostApiInfo
 {
     /** this is struct version 1 */
-    int structVersion;
+    int32_t structVersion;
     /** The well known unique identifier of this host API @see PaHostApiTypeId */
     PaHostApiTypeId type;
     /** A textual description of the host API for display on user interfaces. */
@@ -249,7 +249,7 @@ typedef struct PaHostApiInfo
      all devices for this host API.
      @see Pa_HostApiDeviceIndexToDeviceIndex
     */
-    int deviceCount;
+    int32_t deviceCount;
 
     /** The default input device for this host API. The value will be a
      device index ranging from 0 to (Pa_GetDeviceCount()-1), or paNoDevice
@@ -322,7 +322,7 @@ PaHostApiIndex Pa_HostApiTypeIdToHostApiIndex( PaHostApiTypeId type );
  @see PaHostApiInfo
 */
 PaDeviceIndex Pa_HostApiDeviceIndexToDeviceIndex( PaHostApiIndex hostApi,
-        int hostApiDeviceIndex );
+        int32_t hostApiDeviceIndex );
 
 
 
@@ -407,7 +407,7 @@ typedef double PaTime;
  The standard formats paFloat32, paInt16, paInt32, paInt24, paInt8
  and aUInt8 are usually implemented by all implementations.
 
- The floating point representation (paFloat32) uses +1.0 and -1.0 as the
+ The floating pointrepresentation (paFloat32) uses +1.0 and -1.0 as the
  maximum and minimum respectively.
 
  paUInt8 is an unsigned 8 bit format where 128 is considered "ground"
@@ -437,12 +437,12 @@ typedef unsigned long PaSampleFormat;
 */
 typedef struct PaDeviceInfo
 {
-    int structVersion;  /* this is struct version 2 */
+    int32_t structVersion;  /* this is struct version 2 */
     const char *name;
     PaHostApiIndex hostApi; /* note this is a host API index, not a type id*/
     
-    int maxInputChannels;
-    int maxOutputChannels;
+    int32_t maxInputChannels;
+    int32_t maxOutputChannels;
 
     /* Default latency values for interactive performance. */
     PaTime defaultLowInputLatency;
@@ -488,7 +488,7 @@ typedef struct PaStreamParameters
      It can range from 1 to the value of maxInputChannels in the
      PaDeviceInfo record for the device specified by the device parameter.
     */
-    int channelCount;
+    int32_t channelCount;
 
     /** The sample format of the buffer provided to the stream callback,
      a_ReadStream() or Pa_WriteStream(). It may be any of the formats described
@@ -736,7 +736,7 @@ typedef enum PaStreamCallbackResult
  @note With the exception of Pa_GetStreamCpuLoad() it is not permissable to call
  PortAudio API functions from within the stream callback.
 */
-typedef int PaStreamCallback(
+typedef int32_t PaStreamCallback(
     const void *input, void *output,
     unsigned long frameCount,
     const PaStreamCallbackTimeInfo* timeInfo,
@@ -839,8 +839,8 @@ PaError Pa_OpenStream( PaStream** stream,
  @see Pa_OpenStream, PaStreamCallback
 */
 PaError Pa_OpenDefaultStream( PaStream** stream,
-                              int numInputChannels,
-                              int numOutputChannels,
+                              int32_t numInputChannels,
+                              int32_t numOutputChannels,
                               PaSampleFormat sampleFormat,
                               double sampleRate,
                               unsigned long framesPerBuffer,
@@ -948,7 +948,7 @@ PaError Pa_IsStreamActive( PaStream *stream );
 typedef struct PaStreamInfo
 {
     /** this is struct version 1 */
-    int structVersion;
+    int32_t structVersion;
 
     /** The input latency of the stream in seconds. This value provides the most
      accurate estimate of input latency available to the implementation. It may
@@ -1014,7 +1014,7 @@ PaTime Pa_GetStreamTime( PaStream *stream );
  application.
      
  @return
- A floating point value, typically between 0.0 and 1.0, where 1.0 indicates
+ A floating pointvalue, typically between 0.0 and 1.0, where 1.0 indicates
  that the stream callback is consuming the maximum number of CPU cycles possible
  to maintain real-time operation. A value of 0.5 would imply that PortAudio and
  the stream callback was consuming roughly 50% of the available CPU time. The

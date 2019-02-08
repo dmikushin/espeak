@@ -35,21 +35,21 @@ struct sonicStreamStruct {
     float speed;
     float volume;
     float pitch;
-    int numChannels;
-    int inputBufferSize;
-    int pitchBufferSize;
-    int outputBufferSize;
-    int numInputSamples;
-    int numOutputSamples;
-    int numPitchSamples;
-    int minPeriod;
-    int maxPeriod;
-    int maxRequired;
-    int remainingInputToCopy;
-    int sampleRate;
-    int prevPeriod;
-    int prevMaxDiff;
-    int prevMinDiff;
+    int32_t numChannels;
+    int32_t inputBufferSize;
+    int32_t pitchBufferSize;
+    int32_t outputBufferSize;
+    int32_t numInputSamples;
+    int32_t numOutputSamples;
+    int32_t numPitchSamples;
+    int32_t minPeriod;
+    int32_t maxPeriod;
+    int32_t maxRequired;
+    int32_t remainingInputToCopy;
+    int32_t sampleRate;
+    int32_t prevPeriod;
+    int32_t prevMaxDiff;
+    int32_t prevMinDiff;
 };
 
 /* Just used for debugging */
@@ -70,11 +70,11 @@ void sonicMSG(char *format, ...)
 /* Scale the samples by the factor. */
 static void scaleSamples(
     short *samples,
-    int numSamples,
+    int32_t numSamples,
     float volume)
 {
-    int fixedPointVolume = volume*4096.0f;
-    int value;
+    int32_t fixedPointVolume = volume*4096.0f;
+    int32_t value;
 
     while(numSamples--) {
 	value = (*samples*fixedPointVolume) >> 12;
@@ -133,14 +133,14 @@ void sonicSetVolume(
 }
 
 /* Get the sample rate of the stream. */
-int sonicGetSampleRate(
+int32_t sonicGetSampleRate(
     sonicStream stream)
 {
     return stream->sampleRate;
 }
 
 /* Get the number of channels. */
-int sonicGetNumChannels(
+int32_t sonicGetNumChannels(
     sonicStream stream)
 {
     return stream->numChannels;
@@ -168,13 +168,13 @@ void sonicDestroyStream(
 /* Create a sonic stream.  Return NULL only if we are out of memory and cannot
    allocate the stream. */
 sonicStream sonicCreateStream(
-    int sampleRate,
-    int numChannels)
+    int32_t sampleRate,
+    int32_t numChannels)
 {
     sonicStream stream = (sonicStream)calloc(1, sizeof(struct sonicStreamStruct));
-    int minPeriod = sampleRate/SONIC_MAX_PITCH;
-    int maxPeriod = sampleRate/SONIC_MIN_PITCH;
-    int maxRequired = 2*maxPeriod; 
+    int32_t minPeriod = sampleRate/SONIC_MAX_PITCH;
+    int32_t maxPeriod = sampleRate/SONIC_MIN_PITCH;
+    int32_t maxRequired = 2*maxPeriod; 
 
     if(stream == NULL) {
 	return NULL;
@@ -210,9 +210,9 @@ sonicStream sonicCreateStream(
 }
 
 /* Enlarge the output buffer if needed. */
-static int enlargeOutputBufferIfNeeded(
+static int32_t enlargeOutputBufferIfNeeded(
     sonicStream stream,
-    int numSamples)
+    int32_t numSamples)
 {
     if(stream->numOutputSamples + numSamples > stream->outputBufferSize) {
 	stream->outputBufferSize += (stream->outputBufferSize >> 1) + numSamples;
@@ -226,9 +226,9 @@ static int enlargeOutputBufferIfNeeded(
 }
 
 /* Enlarge the input buffer if needed. */
-static int enlargeInputBufferIfNeeded(
+static int32_t enlargeInputBufferIfNeeded(
     sonicStream stream,
-    int numSamples)
+    int32_t numSamples)
 {
     if(stream->numInputSamples + numSamples > stream->inputBufferSize) {
 	stream->inputBufferSize += (stream->inputBufferSize >> 1) + numSamples;
@@ -242,13 +242,13 @@ static int enlargeInputBufferIfNeeded(
 }
 
 /* Add the input samples to the input buffer. */
-static int addFloatSamplesToInputBuffer(
+static int32_t addFloatSamplesToInputBuffer(
     sonicStream stream,
     float *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     short *buffer;
-    int count = numSamples*stream->numChannels;
+    int32_t count = numSamples*stream->numChannels;
 
     if(numSamples == 0) {
 	return 1;
@@ -265,10 +265,10 @@ static int addFloatSamplesToInputBuffer(
 }
 
 /* Add the input samples to the input buffer. */
-static int addShortSamplesToInputBuffer(
+static int32_t addShortSamplesToInputBuffer(
     sonicStream stream,
     short *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     if(numSamples == 0) {
 	return 1;
@@ -283,13 +283,13 @@ static int addShortSamplesToInputBuffer(
 }
 
 /* Add the input samples to the input buffer. */
-static int addUnsignedCharSamplesToInputBuffer(
+static int32_t addUnsignedCharSamplesToInputBuffer(
     sonicStream stream,
     unsigned char *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     short *buffer;
-    int count = numSamples*stream->numChannels;
+    int32_t count = numSamples*stream->numChannels;
 
     if(numSamples == 0) {
 	return 1;
@@ -308,9 +308,9 @@ static int addUnsignedCharSamplesToInputBuffer(
 /* Remove input samples that we have already processed. */
 static void removeInputSamples(
     sonicStream stream,
-    int position)
+    int32_t position)
 {
-    int remainingSamples = stream->numInputSamples - position;
+    int32_t remainingSamples = stream->numInputSamples - position;
 
     if(remainingSamples > 0) {
 	memmove(stream->inputBuffer, stream->inputBuffer + position*stream->numChannels,
@@ -320,10 +320,10 @@ static void removeInputSamples(
 }
 
 /* Just copy from the array to the output buffer */
-static int copyToOutput(
+static int32_t copyToOutput(
     sonicStream stream,
     short *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     if(!enlargeOutputBufferIfNeeded(stream, numSamples)) {
 	return 0;
@@ -336,11 +336,11 @@ static int copyToOutput(
 
 /* Just copy from the input buffer to the output buffer.  Return 0 if we fail to
    resize the output buffer.  Otherwise, return numSamples */
-static int copyInputToOutput(
+static int32_t copyInputToOutput(
     sonicStream stream,
-    int position)
+    int32_t position)
 {
-    int numSamples = stream->remainingInputToCopy;
+    int32_t numSamples = stream->remainingInputToCopy;
 
     if(numSamples > stream->maxRequired) {
 	numSamples = stream->maxRequired;
@@ -355,15 +355,15 @@ static int copyInputToOutput(
 
 /* Read data out of the stream.  Sometimes no data will be available, and zero
    is returned, which is not an error condition. */
-int sonicReadFloatFromStream(
+int32_t sonicReadFloatFromStream(
     sonicStream stream,
     float *samples,
-    int maxSamples)
+    int32_t maxSamples)
 {
-    int numSamples = stream->numOutputSamples;
-    int remainingSamples = 0;
+    int32_t numSamples = stream->numOutputSamples;
+    int32_t remainingSamples = 0;
     short *buffer;
-    int count;
+    int32_t count;
 
     if(numSamples == 0) {
 	return 0;
@@ -387,13 +387,13 @@ int sonicReadFloatFromStream(
 
 /* Read short data out of the stream.  Sometimes no data will be available, and zero
    is returned, which is not an error condition. */
-int sonicReadShortFromStream(
+int32_t sonicReadShortFromStream(
     sonicStream stream,
     short *samples,
-    int maxSamples)
+    int32_t maxSamples)
 {
-    int numSamples = stream->numOutputSamples;
-    int remainingSamples = 0;
+    int32_t numSamples = stream->numOutputSamples;
+    int32_t remainingSamples = 0;
 
     if(numSamples == 0) {
 	return 0;
@@ -413,15 +413,15 @@ int sonicReadShortFromStream(
 
 /* Read unsigned char data out of the stream.  Sometimes no data will be available, and zero
    is returned, which is not an error condition. */
-int sonicReadUnsignedCharFromStream(
+int32_t sonicReadUnsignedCharFromStream(
     sonicStream stream,
     unsigned char *samples,
-    int maxSamples)
+    int32_t maxSamples)
 {
-    int numSamples = stream->numOutputSamples;
-    int remainingSamples = 0;
+    int32_t numSamples = stream->numOutputSamples;
+    int32_t remainingSamples = 0;
     short *buffer;
-    int count;
+    int32_t count;
 
     if(numSamples == 0) {
 	return 0;
@@ -446,12 +446,12 @@ int sonicReadUnsignedCharFromStream(
 /* Force the sonic stream to generate output using whatever data it currently
    has.  No extra delay will be added to the output, but flushing in the middle of
    words could introduce distortion. */
-int sonicFlushStream(
+int32_t sonicFlushStream(
     sonicStream stream)
 {
-    int maxRequired = stream->maxRequired;
-    int numSamples = stream->numInputSamples;
-    int remainingSpace, numOutputSamples, expectedSamples;
+    int32_t maxRequired = stream->maxRequired;
+    int32_t numSamples = stream->numInputSamples;
+    int32_t remainingSpace, numOutputSamples, expectedSamples;
 
     if(numSamples == 0) {
 	return 1;
@@ -480,7 +480,7 @@ int sonicFlushStream(
 }
 
 /* Return the number of samples in the output buffer */
-int sonicSamplesAvailable(
+int32_t sonicSamplesAvailable(
    sonicStream stream)
 {
     return stream->numOutputSamples;
@@ -492,12 +492,12 @@ int sonicSamplesAvailable(
 static void downSampleInput(
     sonicStream stream,
     short *samples,
-    int skip)
+    int32_t skip)
 {
-    int numSamples = stream->maxRequired/skip;
-    int samplesPerValue = stream->numChannels*skip;
-    int i, j;
-    int value;
+    int32_t numSamples = stream->maxRequired/skip;
+    int32_t samplesPerValue = stream->numChannels*skip;
+    int32_t i, j;
+    int32_t value;
     short *downSamples = stream->downSampleBuffer;
 
     for(i = 0; i < numSamples; i++) {
@@ -512,17 +512,17 @@ static void downSampleInput(
 
 /* Find the best frequency match in the range, and given a sample skip multiple.
    For now, just find the pitch of the first channel.  */
-static int findPitchPeriodInRange(
+static int32_t findPitchPeriodInRange(
     short *samples,
-    int minPeriod,
-    int maxPeriod,
-    int *retMinDiff,
-    int *retMaxDiff)
+    int32_t minPeriod,
+    int32_t maxPeriod,
+    int32_t *retMinDiff,
+    int32_t *retMaxDiff)
 {
-    int period, bestPeriod = 0;
+    int32_t period, bestPeriod = 0;
     short *s, *p, sVal, pVal;
     unsigned long diff, minDiff = 1, maxDiff = 0;
-    int i;
+    int32_t i;
 
     for(period = minPeriod; period <= maxPeriod; period++) {
 	diff = 0;
@@ -552,11 +552,11 @@ static int findPitchPeriodInRange(
 
 /* At abrupt ends of voiced words, we can have pitch periods that are better
    aproximated by the previous pitch period estimate.  Try to detect this case.  */
-static int prevPeriodBetter(
+static int32_t prevPeriodBetter(
     sonicStream stream,
-    int period,
-    int minDiff,
-    int maxDiff)
+    int32_t period,
+    int32_t minDiff,
+    int32_t maxDiff)
 {
     if(maxDiff*3/2 < stream->prevMaxDiff && (maxDiff*3.0f)*stream->prevMinDiff < 
 	    (float)stream->prevMaxDiff*minDiff*2) {
@@ -569,16 +569,16 @@ static int prevPeriodBetter(
    multiple ways to get a good answer.  This version uses AMDF.  To improve
    speed, we down sample by an integer factor get in the 11KHz range, and then
    do it again with a narrower frequency range without down sampling */
-static int findPitchPeriod(
+static int32_t findPitchPeriod(
     sonicStream stream,
     short *samples)
 {
-    int minPeriod = stream->minPeriod;
-    int maxPeriod = stream->maxPeriod;
-    int sampleRate = stream->sampleRate;
-    int minDiff, maxDiff, retPeriod;
-    int skip = 1;
-    int period;
+    int32_t minPeriod = stream->minPeriod;
+    int32_t maxPeriod = stream->maxPeriod;
+    int32_t sampleRate = stream->sampleRate;
+    int32_t minDiff, maxDiff, retPeriod;
+    int32_t skip = 1;
+    int32_t period;
 
     if(sampleRate > SONIC_AMDF_FREQ) {
 	skip = sampleRate/SONIC_AMDF_FREQ;
@@ -623,14 +623,14 @@ static int findPitchPeriod(
 /* Overlap two sound segments, ramp the volume of one down, while ramping the
    other one from zero up, and add them, storing the result at the output. */
 static void overlapAdd(
-    int numSamples,
-    int numChannels,
+    int32_t numSamples,
+    int32_t numChannels,
     short *out,
     short *rampDown,
     short *rampUp)
 {
     short *o, *u, *d;
-    int i, t;
+    int32_t i, t;
 
     for(i = 0; i < numChannels; i++) {
 	o = out + i;
@@ -648,15 +648,15 @@ static void overlapAdd(
 /* Overlap two sound segments, ramp the volume of one down, while ramping the
    other one from zero up, and add them, storing the result at the output. */
 static void overlapAddWithSeparation(
-    int numSamples,
-    int numChannels,
-    int separation,
+    int32_t numSamples,
+    int32_t numChannels,
+    int32_t separation,
     short *out,
     short *rampDown,
     short *rampUp)
 {
     short *o, *u, *d;
-    int i, t;
+    int32_t i, t;
 
     for(i = 0; i < numChannels; i++) {
 	o = out + i;
@@ -680,12 +680,12 @@ static void overlapAddWithSeparation(
 }
 
 /* Just move the new samples in the output buffer to the pitch bufer */
-static int moveNewSamplesToPitchBuffer(
+static int32_t moveNewSamplesToPitchBuffer(
     sonicStream stream,
-    int originalNumOutputSamples)
+    int32_t originalNumOutputSamples)
 {
-    int numSamples = stream->numOutputSamples - originalNumOutputSamples;
-    int numChannels = stream->numChannels;
+    int32_t numSamples = stream->numOutputSamples - originalNumOutputSamples;
+    int32_t numChannels = stream->numChannels;
 
     if(stream->numPitchSamples + numSamples > stream->pitchBufferSize) {
 	stream->pitchBufferSize += (stream->pitchBufferSize >> 1) + numSamples;
@@ -706,9 +706,9 @@ static int moveNewSamplesToPitchBuffer(
 /* Remove processed samples from the pitch buffer. */
 static void removePitchSamples(
     sonicStream stream,
-    int numSamples)
+    int32_t numSamples)
 {
-    int numChannels = stream->numChannels;
+    int32_t numChannels = stream->numChannels;
     short *source = stream->pitchBuffer + numSamples*numChannels;
 
     if(numSamples == 0) {
@@ -723,14 +723,14 @@ static void removePitchSamples(
 
 /* Change the pitch.  The latency this introduces could be reduced by looking at
    past samples to determine pitch, rather than future. */
-static int adjustPitch(
+static int32_t adjustPitch(
     sonicStream stream,
-    int originalNumOutputSamples)
+    int32_t originalNumOutputSamples)
 {
     float pitch = stream->pitch;
-    int numChannels = stream->numChannels;
-    int period, newPeriod, separation;
-    int position = 0;
+    int32_t numChannels = stream->numChannels;
+    int32_t period, newPeriod, separation;
+    int32_t position = 0;
     short *out, *rampDown, *rampUp;
 
     if(stream->numOutputSamples == originalNumOutputSamples) {
@@ -764,14 +764,14 @@ static int adjustPitch(
 }
 
 /* Skip over a pitch period, and copy period/speed samples to the output */
-static int skipPitchPeriod(
+static int32_t skipPitchPeriod(
     sonicStream stream,
     short *samples,
     float speed,
-    int period)
+    int32_t period)
 {
     long newSamples;
-    int numChannels = stream->numChannels;
+    int32_t numChannels = stream->numChannels;
 
     if(speed >= 2.0f) {
 	newSamples = period/(speed - 1.0f);
@@ -789,15 +789,15 @@ static int skipPitchPeriod(
 }
 
 /* Insert a pitch period, and determine how much input to copy directly. */
-static int insertPitchPeriod(
+static int32_t insertPitchPeriod(
     sonicStream stream,
     short *samples,
     float speed,
-    int period)
+    int32_t period)
 {
     long newSamples;
     short *out;
-    int numChannels = stream->numChannels;
+    int32_t numChannels = stream->numChannels;
 
     if(speed < 0.5f) {
         newSamples = period*speed/(1.0f - speed);
@@ -818,14 +818,14 @@ static int insertPitchPeriod(
 
 /* Resample as many pitch periods as we have buffered on the input.  Return 0 if
    we fail to resize an input or output buffer.  Also scale the output by the volume. */
-static int changeSpeed(
+static int32_t changeSpeed(
     sonicStream stream,
     float speed)
 {
     short *samples;
-    int numSamples = stream->numInputSamples;
-    int position = 0, period, newSamples;
-    int maxRequired = stream->maxRequired;
+    int32_t numSamples = stream->numInputSamples;
+    int32_t position = 0, period, newSamples;
+    int32_t maxRequired = stream->maxRequired;
 
     if(stream->numInputSamples < maxRequired) {
 	return 1;
@@ -855,10 +855,10 @@ static int changeSpeed(
 
 /* Resample as many pitch periods as we have buffered on the input.  Return 0 if
    we fail to resize an input or output buffer.  Also scale the output by the volume. */
-static int processStreamInput(
+static int32_t processStreamInput(
     sonicStream stream)
 {
-    int originalNumOutputSamples = stream->numOutputSamples;
+    int32_t originalNumOutputSamples = stream->numOutputSamples;
     float speed = stream->speed/stream->pitch;
 
     if(speed > 1.00001 || speed < 0.99999) {
@@ -883,11 +883,11 @@ static int processStreamInput(
     return 1;
 }
 
-/* Write floating point data to the input buffer and process it. */
-int sonicWriteFloatToStream(
+/* Write floating point32_t data to the input buffer and process it. */
+int32_t sonicWriteFloatToStream(
     sonicStream stream,
     float *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     if(!addFloatSamplesToInputBuffer(stream, samples, numSamples)) {
 	return 0;
@@ -897,10 +897,10 @@ int sonicWriteFloatToStream(
 
 /* Simple wrapper around sonicWriteFloatToStream that does the short to float
    conversion for you. */
-int sonicWriteShortToStream(
+int32_t sonicWriteShortToStream(
     sonicStream stream,
     short *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     if(!addShortSamplesToInputBuffer(stream, samples, numSamples)) {
 	return 0;
@@ -910,10 +910,10 @@ int sonicWriteShortToStream(
 
 /* Simple wrapper around sonicWriteFloatToStream that does the unsigned char to float
    conversion for you. */
-int sonicWriteUnsignedCharToStream(
+int32_t sonicWriteUnsignedCharToStream(
     sonicStream stream,
     unsigned char *samples,
-    int numSamples)
+    int32_t numSamples)
 {
     if(!addUnsignedCharSamplesToInputBuffer(stream, samples, numSamples)) {
 	return 0;
@@ -922,14 +922,14 @@ int sonicWriteUnsignedCharToStream(
 }
 
 /* This is a non-stream oriented interface to just change the speed of a sound sample */
-int sonicChangeFloatSpeed(
+int32_t sonicChangeFloatSpeed(
     float *samples,
-    int numSamples,
+    int32_t numSamples,
     float speed,
     float pitch,
     float volume,
-    int sampleRate,
-    int numChannels)
+    int32_t sampleRate,
+    int32_t numChannels)
 {
     sonicStream stream = sonicCreateStream(sampleRate, numChannels);
 
@@ -945,14 +945,14 @@ int sonicChangeFloatSpeed(
 }
 
 /* This is a non-stream oriented interface to just change the speed of a sound sample */
-int sonicChangeShortSpeed(
+int32_t sonicChangeShortSpeed(
     short *samples,
-    int numSamples,
+    int32_t numSamples,
     float speed,
     float pitch,
     float volume,
-    int sampleRate,
-    int numChannels)
+    int32_t sampleRate,
+    int32_t numChannels)
 {
     sonicStream stream = sonicCreateStream(sampleRate, numChannels);
 

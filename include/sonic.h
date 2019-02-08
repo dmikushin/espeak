@@ -79,33 +79,33 @@ typedef struct sonicStreamStruct *sonicStream;
 
 /* Create a sonic stream.  Return NULL only if we are out of memory and cannot
   allocate the stream. Set numChannels to 1 for mono, and 2 for stereo. */
-sonicStream sonicCreateStream(int sampleRate, int numChannels);
+sonicStream sonicCreateStream(int32_t sampleRate, int32_t numChannels);
 /* Destroy the sonic stream. */
 void sonicDestroyStream(sonicStream stream);
-/* Use this to write floating point data to be speed up or down into the stream.
+/* Use this to write floating pointdata to be speed up or down into the stream.
    Values must be between -1 and 1.  Return 0 if memory realloc failed, otherwise 1 */
-int sonicWriteFloatToStream(sonicStream stream, float *samples, int numSamples);
+int32_t sonicWriteFloatToStream(sonicStream stream, float *samples, int32_t numSamples);
 /* Use this to write 16-bit data to be speed up or down into the stream.
    Return 0 if memory realloc failed, otherwise 1 */
-int sonicWriteShortToStream(sonicStream stream, short *samples, int numSamples);
+int32_t sonicWriteShortToStream(sonicStream stream, short *samples, int32_t numSamples);
 /* Use this to write 8-bit unsigned data to be speed up or down into the stream.
    Return 0 if memory realloc failed, otherwise 1 */
-int sonicWriteUnsignedCharToStream(sonicStream stream, unsigned char *samples, int numSamples);
-/* Use this to read floating point data out of the stream.  Sometimes no data
+int32_t sonicWriteUnsignedCharToStream(sonicStream stream, unsigned char *samples, int32_t numSamples);
+/* Use this to read floating pointdata out of the stream.  Sometimes no data
    will be available, and zero is returned, which is not an error condition. */
-int sonicReadFloatFromStream(sonicStream stream, float *samples, int maxSamples);
+int32_t sonicReadFloatFromStream(sonicStream stream, float *samples, int32_t maxSamples);
 /* Use this to read 16-bit data out of the stream.  Sometimes no data will
    be available, and zero is returned, which is not an error condition. */
-int sonicReadShortFromStream(sonicStream stream, short *samples, int maxSamples);
+int32_t sonicReadShortFromStream(sonicStream stream, short *samples, int32_t maxSamples);
 /* Use this to read 8-bit unsigned data out of the stream.  Sometimes no data will
    be available, and zero is returned, which is not an error condition. */
-int sonicReadUnsignedCharFromStream(sonicStream stream, unsigned char *samples, int maxSamples);
+int32_t sonicReadUnsignedCharFromStream(sonicStream stream, unsigned char *samples, int32_t maxSamples);
 /* Force the sonic stream to generate output using whatever data it currently
    has.  No extra delay will be added to the output, but flushing in the middle of
    words could introduce distortion. */
-int sonicFlushStream(sonicStream stream);
+int32_t sonicFlushStream(sonicStream stream);
 /* Return the number of samples in the output buffer */
-int sonicSamplesAvailable(sonicStream stream);
+int32_t sonicSamplesAvailable(sonicStream stream);
 /* Get the speed of the stream. */
 float sonicGetSpeed(sonicStream stream);
 /* Set the speed of the stream. */
@@ -119,19 +119,19 @@ float sonicGetVolume(sonicStream stream);
 /* Set the scaling factor of the stream. */
 void sonicSetVolume(sonicStream stream, float volume);
 /* Get the sample rate of the stream. */
-int sonicGetSampleRate(sonicStream stream);
+int32_t sonicGetSampleRate(sonicStream stream);
 /* Get the number of channels. */
-int sonicGetNumChannels(sonicStream stream);
+int32_t sonicGetNumChannels(sonicStream stream);
 /* This is a non-stream oriented interface to just change the speed of a sound
    sample.  It works in-place on the sample array, so there must be at least
    speed*numSamples available space in the array. Returns the new number of samples. */
-int sonicChangeFloatSpeed(float *samples, int numSamples, float speed, float pitch,
-    float volume, int sampleRate, int numChannels);
+int32_t sonicChangeFloatSpeed(float *samples, int32_t numSamples, float speed, float pitch,
+    float volume, int32_t sampleRate, int32_t numChannels);
 /* This is a non-stream oriented interface to just change the speed of a sound
    sample.  It works in-place on the sample array, so there must be at least
    speed*numSamples available space in the array. Returns the new number of samples. */
-int sonicChangeShortSpeed(short *samples, int numSamples, float speed, float pitch,
-    float volume, int sampleRate, int numChannels);
+int32_t sonicChangeShortSpeed(short *samples, int32_t numSamples, float speed, float pitch,
+    float volume, int32_t sampleRate, int32_t numChannels);
 
 #ifdef  __cplusplus
 }

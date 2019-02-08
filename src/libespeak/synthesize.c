@@ -37,30 +37,30 @@ static void SmoothSpect(void);
 
 
 // list of phonemes in a clause
-int n_phoneme_list=0;
+int32_t n_phoneme_list=0;
 PHONEME_LIST phoneme_list[N_PHONEME_LIST+1];
 
-int mbrola_delay;
+int32_t mbrola_delay;
 char mbrola_name[20];
 
 SPEED_FACTORS speed;
 
-static int  last_pitch_cmd;
-static int  last_amp_cmd;
+static int32_t  last_pitch_cmd;
+static int32_t  last_amp_cmd;
 static frame_t  *last_frame;
-static int  last_wcmdq;
-static int  pitch_length;
-static int  amp_length;
-static int  modn_flags;
-static int  fmt_amplitude=0;
+static int32_t  last_wcmdq;
+static int32_t  pitch_length;
+static int32_t  amp_length;
+static int32_t  modn_flags;
+static int32_t  fmt_amplitude=0;
 
-static int  syllable_start;
-static int  syllable_end;
-static int  syllable_centre;
+static int32_t  syllable_start;
+static int32_t  syllable_end;
+static int32_t  syllable_centre;
 
 static voice_t *new_voice=NULL;
 
-int n_soundicon_tab=N_SOUNDICON_SLOTS;
+int32_t n_soundicon_tab=N_SOUNDICON_SLOTS;
 SOUND_ICON soundicon_tab[N_SOUNDICON_TAB];
 
 #define RMS_GLOTTAL1 35   // vowel before glottal stop
@@ -74,10 +74,10 @@ SOUND_ICON soundicon_tab[N_SOUNDICON_TAB];
 static PHONEME_LIST next_pause;
 
 
-const char *WordToString(unsigned int word)
+const char *WordToString(uint32_t word)
 {//========================================
 // Convert a phoneme mnemonic word into a string
-	int  ix;
+	int32_t  ix;
 	static char buf[5];
 
 	for(ix=0; ix<4; ix++)
@@ -115,7 +115,7 @@ static void EndAmplitude(void)
 
 
 
-static void EndPitch(int voice_break)
+static void EndPitch(int32_t voice_break)
 {//==================================
 	// posssible end of pitch envelope, fill in the length
 	if((pitch_length > 0) && (last_pitch_cmd >= 0))
@@ -138,7 +138,7 @@ static void EndPitch(int voice_break)
 
 
 
-static void DoAmplitude(int amp, unsigned char *amp_env)
+static void DoAmplitude(int32_t amp, unsigned char *amp_env)
 {//=====================================================
 	long64 *q;
 
@@ -155,7 +155,7 @@ static void DoAmplitude(int amp, unsigned char *amp_env)
 
 
 
-static void DoPitch(unsigned char *env, int pitch1, int pitch2)
+static void DoPitch(unsigned char *env, int32_t pitch1, int32_t pitch2)
 {//============================================================
 	long64 *q;
 
@@ -184,9 +184,9 @@ static void DoPitch(unsigned char *env, int pitch1, int pitch2)
 
 
 
-int PauseLength(int pause, int control)
+int32_t PauseLength(int32_t pause, int32_t control)
 {//====================================
-	unsigned int len;
+	uint32_t len;
 
 	if(control == 0)
 	{
@@ -206,12 +206,12 @@ int PauseLength(int pause, int control)
 }
 
 
-static void DoPause(int length, int control)
+static void DoPause(int32_t length, int32_t control)
 {//=========================================
 // length in nominal mS
 // control = 1, less shortening at fast speeds
-	unsigned int len;
-	int srate2;
+	uint32_t len;
+	int32_t srate2;
 
 	if(length == 0)
 		len = 0;
@@ -245,17 +245,17 @@ static void DoPause(int length, int control)
 }  // end of DoPause
 
 
-extern int seq_len_adjust;   // temporary fix to advance the start point for playing the wav sample
+extern int32_t seq_len_adjust;   // temporary fix to advance the start point32_t for playing the wav sample
 
 
-static int DoSample2(int index, int which, int std_length, int control, int length_mod, int amp)
+static int32_t DoSample2(int32_t index, int32_t which, int32_t std_length, int32_t control, int32_t length_mod, int32_t amp)
 {//=============================================================================================
-	int length;
-	int wav_length;
-	int wav_scale;
-	int min_length;
-	int x;
-	int len4;
+	int32_t length;
+	int32_t wav_length;
+	int32_t wav_scale;
+	int32_t min_length;
+	int32_t x;
+	int32_t len4;
 	long64 *q;
 	unsigned char *p;
 
@@ -406,10 +406,10 @@ static int DoSample2(int index, int which, int std_length, int control, int leng
 
 
 
-int DoSample3(PHONEME_DATA *phdata, int length_mod, int amp)
+int32_t DoSample3(PHONEME_DATA *phdata, int32_t length_mod, int32_t amp)
 {//=========================================================
-	int amp2;
-	int len;
+	int32_t amp2;
+	int32_t len;
 	EndPitch(1);
 
 	if(amp == -1)
@@ -449,7 +449,7 @@ static frame_t *AllocFrame()
 	// Only needed for modifying spectra for blending to consonants
 
 #define N_FRAME_POOL  N_WCMDQ
-	static int ix=0;
+	static int32_t ix=0;
 	static frame_t frame_pool[N_FRAME_POOL];
 
 	ix++;
@@ -459,14 +459,14 @@ static frame_t *AllocFrame()
 }
 
 
-static void set_frame_rms(frame_t *fr, int new_rms)
+static void set_frame_rms(frame_t *fr, int32_t new_rms)
 {//=================================================
 // Each frame includes its RMS amplitude value, so to set a new
 // RMS just adjust the formant amplitudes by the appropriate ratio
 
-	int x;
-	int h;
-	int ix;
+	int32_t x;
+	int32_t h;
+	int32_t ix;
 
 	static const short sqrt_tab[200] = {
 	  0, 64, 90,110,128,143,156,169,181,192,202,212,221,230,239,247,
@@ -507,11 +507,11 @@ static void set_frame_rms(frame_t *fr, int new_rms)
 
 
 
-static void formants_reduce_hf(frame_t *fr, int level)
+static void formants_reduce_hf(frame_t *fr, int32_t level)
 {//====================================================
 //  change height of peaks 2 to 8, percentage
-	int  ix;
-	int  x;
+	int32_t  ix;
+	int32_t  x;
 
 	if(voice->klattv[0])
 		return;
@@ -524,7 +524,7 @@ static void formants_reduce_hf(frame_t *fr, int level)
 }
 
 
-static frame_t *CopyFrame(frame_t *frame1, int copy)
+static frame_t *CopyFrame(frame_t *frame1, int32_t copy)
 {//=================================================
 //  create a copy of the specified frame in temporary buffer
 	frame_t *frame2;
@@ -546,7 +546,7 @@ static frame_t *CopyFrame(frame_t *frame1, int copy)
 }
 
 
-static frame_t *DuplicateLastFrame(frameref_t *seq, int n_frames, int length)
+static frame_t *DuplicateLastFrame(frameref_t *seq, int32_t n_frames, int32_t length)
 {//==========================================================================
 	frame_t *fr;
 
@@ -558,9 +558,9 @@ static frame_t *DuplicateLastFrame(frameref_t *seq, int n_frames, int length)
 }
 
 
-static void AdjustFormants(frame_t *fr, int target, int min, int max, int f1_adj, int f3_adj, int hf_reduce, int flags)
+static void AdjustFormants(frame_t *fr, int32_t target, int32_t min, int32_t max, int32_t f1_adj, int32_t f3_adj, int32_t hf_reduce, int32_t flags)
 {//====================================================================================================================
-	int x;
+	int32_t x;
 
 //hf_reduce = 70;      // ?? using fixed amount rather than the parameter??
 
@@ -606,10 +606,10 @@ static void AdjustFormants(frame_t *fr, int target, int min, int max, int f1_adj
 }
 
 
-static int VowelCloseness(frame_t *fr)
+static int32_t VowelCloseness(frame_t *fr)
 {//===================================
 // return a value 0-3 depending on the vowel's f1
-	int f1;
+	int32_t f1;
 
 	if((f1 = fr->ffreq[1]) < 300)
 		return(3);
@@ -621,22 +621,22 @@ static int VowelCloseness(frame_t *fr)
 }
 
 
-int FormantTransition2(frameref_t *seq, int *n_frames, unsigned int data1, unsigned int data2, PHONEME_TAB *other_ph, int which)
+int32_t FormantTransition2(frameref_t *seq, int32_t *n_frames, uint32_t data1, uint32_t data2, PHONEME_TAB *other_ph, int32_t which)
 {//==============================================================================================================================
-	int ix;
-	int formant;
-	int next_rms;
+	int32_t ix;
+	int32_t formant;
+	int32_t next_rms;
 
-	int len;
-	int rms;
-	int f1;
-	int f2;
-	int f2_min;
-	int f2_max;
-	int f3_adj;
-	int f3_amp;
-	int flags;
-	int vcolour;
+	int32_t len;
+	int32_t rms;
+	int32_t f1;
+	int32_t f2;
+	int32_t f2_min;
+	int32_t f2_max;
+	int32_t f3_adj;
+	int32_t f3_amp;
+	int32_t flags;
+	int32_t vcolour;
 
 #define N_VCOLOUR  2
 // percentage change for each formant in 256ths
@@ -752,7 +752,7 @@ if(voice->klattv[0])
 
 					for(formant=1; formant<=5; formant++)
 					{
-						int x;
+						int32_t x;
 						x = fr->ffreq[formant] * vcolouring[vcolour-1][formant-1];
 						fr->ffreq[formant] = x / 256;
 					}
@@ -788,12 +788,12 @@ static void SmoothSpect(void)
 	frame_t *frame2;
 	frame_t *frame1;
 	frame_t *frame_centre;
-	int ix;
-	int len;
-	int pk;
-	int modified;
-	int allowed;
-	int diff;
+	int32_t ix;
+	int32_t len;
+	int32_t pk;
+	int32_t modified;
+	int32_t allowed;
+	int32_t diff;
 
 	if(syllable_start == syllable_end)
 		return;
@@ -842,7 +842,7 @@ static void SmoothSpect(void)
 
 			for(pk=0; pk<6; pk++)
 			{
-				int f1, f2;
+				int32_t f1, f2;
 
 				if((frame->frflags & FRFLAG_BREAK_LF) && (pk < 3))
 					continue;
@@ -933,7 +933,7 @@ static void SmoothSpect(void)
 
 			for(pk=0; pk<6; pk++)
 			{
-				int f1, f2;
+				int32_t f1, f2;
 				f1 = frame1->ffreq[pk];
 				f2 = frame->ffreq[pk];
 
@@ -992,30 +992,30 @@ static void StartSyllable(void)
 
 
 
-int DoSpect2(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,  PHONEME_LIST *plist, int modulation)
+int32_t DoSpect2(PHONEME_TAB *this_ph, int32_t which, FMT_PARAMS *fmt_params,  PHONEME_LIST *plist, int32_t modulation)
 {//========================================================================================================
 	// which:  0 not a vowel, 1  start of vowel,   2 body and end of vowel
 	// length_mod: 256 = 100%
 	// modulation: -1 = don't write to wcmdq
 
-	int  n_frames;
+	int32_t  n_frames;
 	frameref_t *frames;
-	int  frameix;
+	int32_t  frameix;
 	frame_t *frame1;
 	frame_t *frame2;
 	frame_t *fr;
-	int  ix;
+	int32_t  ix;
 	long64 *q;
-	int  len;
-	int  frame_length;
-	int  length_factor;
-	int  length_mod;
-	int  length_sum;
-	int  length_min;
-	int  total_len = 0;
-	static int wave_flag = 0;
-	int wcmd_spect = WCMD_SPECT;
-	int frame_lengths[N_SEQ_FRAMES];
+	int32_t  len;
+	int32_t  frame_length;
+	int32_t  length_factor;
+	int32_t  length_mod;
+	int32_t  length_sum;
+	int32_t  length_min;
+	int32_t  total_len = 0;
+	static int32_t wave_flag = 0;
+	int32_t wcmd_spect = WCMD_SPECT;
+	int32_t frame_lengths[N_SEQ_FRAMES];
 
 	if(fmt_params->fmt_addr == 0)
 		return(0);
@@ -1112,7 +1112,7 @@ if(which==1)
 	{
 		SmoothSpect();    // process previous syllable
 
-		// remember the point in the output queue of the centre of the vowel
+		// remember the point32_t in the output queue of the centre of the vowel
 		syllable_centre = wcmdq_tail;
 	}
 
@@ -1213,7 +1213,7 @@ if(which==1)
 
 
 
-void DoMarker(int type, int char_posn, int length, int value)
+void DoMarker(int32_t type, int32_t char_posn, int32_t length, int32_t value)
 {//==========================================================
 // This could be used to return an index to the word currently being spoken
 // Type 1=word, 2=sentence, 3=named marker, 4=play audio, 5=end
@@ -1227,17 +1227,17 @@ void DoMarker(int type, int char_posn, int length, int value)
 }  // end of DoMarker
 
 
-void DoPhonemeMarker(int type, int char_posn, int length, char *name)
+void DoPhonemeMarker(int32_t type, int32_t char_posn, int32_t length, char *name)
 {//==================================================================
 // This could be used to return an index to the word currently being spoken
 // Type 7=phoneme
-	int *p;
+	int32_t *p;
 
 	if(WcmdqFree() > 5)
 	{
 		wcmdq[wcmdq_tail][0] = WCMD_MARKER + (type << 8);
 		wcmdq[wcmdq_tail][1] = (char_posn & 0xffffff) | (length << 24);
-		p = (int *)name;
+		p = (int32_t *)name;
 		wcmdq[wcmdq_tail][2] = p[0];   // up to 8 bytes of UTF8 characters
 		wcmdq[wcmdq_tail][3] = p[1];
 		WcmdqInc();
@@ -1246,7 +1246,7 @@ void DoPhonemeMarker(int type, int char_posn, int length, char *name)
 
 
 #ifdef INCLUDE_SONIC
-void DoSonicSpeed(int value)
+void DoSonicSpeed(int32_t value)
 {//=========================
 // value, multiplier * 1024
 	wcmdq[wcmdq_tail][0] = WCMD_SONIC_SPEED;
@@ -1269,12 +1269,12 @@ void DoVoiceChange(voice_t *v)
 }
 
 
-void DoEmbedded(int *embix, int sourceix)
+void DoEmbedded(int32_t *embix, int32_t sourceix)
 {//======================================
 	// There were embedded commands in the text at this point
-	unsigned int word;  // bit 7=last command for this word, bits 5,6 sign, bits 0-4 command
-	unsigned int value;
-	int command;
+	uint32_t word;  // bit 7=last command for this word, bits 5,6 sign, bits 0-4 command
+	uint32_t value;
+	int32_t command;
 
 	do {
 		word = embedded_list[*embix];
@@ -1329,27 +1329,27 @@ void DoEmbedded(int *embix, int sourceix)
 
 
 
-int Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
+int32_t Generate(PHONEME_LIST *phoneme_list, int32_t *n_ph, int32_t resume)
 {//============================================================
-	static int  ix;
-	static int  embedded_ix;
-	static int  word_count;
+	static int32_t  ix;
+	static int32_t  embedded_ix;
+	static int32_t  word_count;
 	PHONEME_LIST *prev;
 	PHONEME_LIST *next;
 	PHONEME_LIST *next2;
 	PHONEME_LIST *p;
-	int  released;
-	int  stress;
-	int  modulation;
-	int  pre_voiced;
-	int  free_min;
+	int32_t  released;
+	int32_t  stress;
+	int32_t  modulation;
+	int32_t  pre_voiced;
+	int32_t  free_min;
 	unsigned char *pitch_env=NULL;
 	unsigned char *amp_env;
 	PHONEME_TAB *ph;
-	int use_ipa=0;
-	int done_phoneme_marker;
+	int32_t use_ipa=0;
+	int32_t done_phoneme_marker;
 	char phoneme_name[16];
-	static int sourceix=0;
+	static int32_t sourceix=0;
 
 	PHONEME_DATA phdata;
 	PHONEME_DATA phdata_prev;
@@ -1825,10 +1825,10 @@ int Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
 
 
 
-static int timer_on = 0;
-static int paused = 0;
+static int32_t timer_on = 0;
+static int32_t paused = 0;
 
-int SynthOnTimer()
+int32_t SynthOnTimer()
 {//===============
 	if(!timer_on)
 	{
@@ -1849,14 +1849,14 @@ int SynthOnTimer()
 }
 
 
-int SynthStatus()
+int32_t SynthStatus()
 {//==============
 	return(timer_on | paused);
 }
 
 
 
-int SpeakNextClause(FILE *f_in, const void *text_in, int control)
+int32_t SpeakNextClause(FILE *f_in, const void *text_in, int32_t control)
 {//==============================================================
 // Speak text from file (f_in) or memory (text_in)
 // control 0: start
@@ -1869,7 +1869,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 //         4: is file being read (0=no, 1=yes)
 //         5: interrupt and flush current text.
 
-	int clause_tone;
+	int32_t clause_tone;
 	char *voice_change;
 	static FILE *f_text=NULL;
 	static const void *p_text=NULL;
@@ -1962,7 +1962,7 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 
 	if((option_phonemes > 0) || (phoneme_callback != NULL))
 	{
-		int phoneme_mode = 0;
+		int32_t phoneme_mode = 0;
 		if(option_phonemes >= 3)
 			phoneme_mode = 0x10 + option_phonemes-3;   // 0x10=ipa, 0x11=ipa with tie, 0x12=ipa with ZWJ, 0x13=ipa with separators
 

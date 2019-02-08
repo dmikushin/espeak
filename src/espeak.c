@@ -88,50 +88,26 @@ static const char *help_text =
 
 
 
-int samplerate;
-int quiet = 0;
-unsigned int samples_total = 0;
-unsigned int samples_split = 0;
-unsigned int samples_split_seconds = 0;
-unsigned int wavefile_count = 0;
+int32_t samplerate;
+int32_t quiet = 0;
+uint32_t samples_total = 0;
+uint32_t samples_split = 0;
+uint32_t samples_split_seconds = 0;
+uint32_t wavefile_count = 0;
 
 FILE *f_wavfile = NULL;
 char filetype[5];
 char wavefile[200];
 
 
-int GetFileLength(const char *filename)
-{//====================================
-	struct stat statbuf;
-
-	if(stat(filename,&statbuf) != 0)
-		return(0);
-
-	if((statbuf.st_mode & S_IFMT) == S_IFDIR)
-		return(-2);  // a directory
-
-	return(statbuf.st_size);
-}  // end of GetFileLength
-
-
-void strncpy0(char *dest, const char *source, int size)
-{//====================================================
-	if(source!=NULL)
-	{
-		strncpy(dest,source,size);
-		dest[size-1] = 0;
-	}
-}
-
-
 void DisplayVoices(FILE *f_out, char *language)
 {//============================================
-	int ix;
+	int32_t ix;
 	const char *p;
-	int len;
-	int count;
-	int c;
-	int j;
+	int32_t len;
+	int32_t count;
+	int32_t c;
+	int32_t j;
 	const espeak_VOICE *v;
 	const char *lang_name;
 	char age_buf[12];
@@ -198,10 +174,10 @@ void DisplayVoices(FILE *f_out, char *language)
 
 
 
-static void Write4Bytes(FILE *f, int value)
+static void Write4Bytes(FILE *f, int32_t value)
 {//=================================
 // Write 4 bytes to a file, least significant first
-	int ix;
+	int32_t ix;
 
 	for(ix=0; ix<4; ix++)
 	{
@@ -212,7 +188,7 @@ static void Write4Bytes(FILE *f, int value)
 
 
 
-int OpenWavFile(char *path, int rate)
+int32_t OpenWavFile(char *path, int32_t rate)
 //===================================
 {
 	static unsigned char wave_hdr[44] = {
@@ -253,7 +229,7 @@ int OpenWavFile(char *path, int rate)
 static void CloseWavFile()
 //========================
 {
-	unsigned int pos;
+	uint32_t pos;
 
 	if((f_wavfile==NULL) || (f_wavfile == stdout))
 		return;
@@ -273,7 +249,7 @@ static void CloseWavFile()
 } // end of CloseWavFile
 
 
-static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
+static int32_t SynthCallback(short *wav, int32_t numsamples, espeak_EVENT *events)
 {//========================================================================
 	char fname[210];
 
@@ -344,12 +320,12 @@ static void PrintVersion()
 #ifdef NEED_GETOPT
 	struct option {
 		char *name;
-		int has_arg;
-		int *flag;
-		int val;
+		int32_t has_arg;
+		int32_t *flag;
+		int32_t val;
 	};
-	int optind;
-	static int optional_argument;
+	int32_t optind;
+	static int32_t optional_argument;
 	static const char *arg_opts = "abfgklpsvw";  // which options have arguments
 	static char *opt_string="";
 #define no_argument 0
@@ -357,7 +333,7 @@ static void PrintVersion()
 #define optional_argument 2
 #endif
 
-int main (int argc, char **argv)
+int32_t main (int32_t argc, char **argv)
 //==============================
 {
 	static struct option long_options[] =
@@ -392,26 +368,26 @@ int main (int argc, char **argv)
 	FILE *f_phonemes_out = stdout;
 	char *data_path = NULL;   // use default path for espeak-data
 
-	int option_index = 0;
-	int c;
-	int ix;
+	int32_t option_index = 0;
+	int32_t c;
+	int32_t ix;
 	char *optarg2;
-	int value;
-	int flag_stdin = 0;
-	int flag_compile = 0;
-	int filesize = 0;
-	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+	int32_t value;
+	int32_t flag_stdin = 0;
+	int32_t flag_compile = 0;
+	int32_t filesize = 0;
+	int32_t synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
 
-	int volume = -1;
-	int speed = -1;
-	int pitch = -1;
-	int wordgap = -1;
-	int option_capitals = -1;
-	int option_punctuation = -1;
-	int option_phonemes = 0;
-	int option_mbrola_phonemes = 0;
-	int option_linelength = 0;
-	int option_waveout = 0;
+	int32_t volume = -1;
+	int32_t speed = -1;
+	int32_t pitch = -1;
+	int32_t wordgap = -1;
+	int32_t option_capitals = -1;
+	int32_t option_punctuation = -1;
+	int32_t option_phonemes = 0;
+	int32_t option_mbrola_phonemes = 0;
+	int32_t option_linelength = 0;
+	int32_t option_waveout = 0;
 
 	espeak_VOICE voice_select;
 	char filename[200];
@@ -429,7 +405,7 @@ int main (int argc, char **argv)
 	opt_string = "";
 	while(optind < argc)
 	{
-		int len;
+		int32_t len;
 		char *p;
 
 		if((c = *opt_string) == 0)
@@ -741,14 +717,14 @@ int main (int argc, char **argv)
 
 	if(p_text != NULL)
 	{
-		int size;
+		int32_t size;
 		size = strlen(p_text);
 		espeak_Synth(p_text,size+1,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
 	}
 	else
 	if(flag_stdin)
 	{
-		int max = 1000;
+		int32_t max = 1000;
 		p_text = (char *)malloc(max);
 
 		if(flag_stdin == 2)

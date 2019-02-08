@@ -39,7 +39,7 @@ typedef struct
   long FLPhz ;      /* Frequeny of glottal downsample low-pass filter */
   long BLPhz ;      /* Bandwidth of glottal downsample low-pass filter */
   flag glsource;    /* Type of glottal source */
-  int f0_flutter;   /* Percentage of f0 flutter 0-100 */
+  int32_t f0_flutter;   /* Percentage of f0 flutter 0-100 */
   long nspfr;       /* number of samples per frame */
   long nper;        /* Counter for number of samples in a pitch period */
   long ns;
@@ -60,13 +60,13 @@ typedef struct
   double amp_frica; /* AF converted to linear gain              */
   double amp_breth; /* ATURB converted to linear gain           */
   double amp_gain0; /* G0 converted to linear gain              */
-  int num_samples; /* number of glottal samples */
+  int32_t num_samples; /* number of glottal samples */
   double sample_factor; /* multiplication factor for glottal samples */
   short *natural_samples; /* pointer to an array of glottal samples */
   long original_f0; /* original value of f0 not modified by flutter */
 
-	int fadeout;       // set to 64 to cause fadeout over 64 samples
-	int scale_wav;     // depends on the voicing source
+	int32_t fadeout;       // set to 64 to cause fadeout over 64 samples
+	int32_t scale_wav;     // depends on the voicing source
 
 #define N_RSN 20
 #define Rnz  0   // nasal zero, anti-resonator
@@ -112,36 +112,36 @@ typedef struct
 
 typedef struct
 {
-	int F0hz10; /* Voicing fund freq in Hz                          */
-	int AVdb;   /* Amp of voicing in dB,            0 to   70       */
-	int Fhz[10];  // formant Hz, F_NZ to F6 to F_NP
-	int Bhz[10];
-	int Ap[10];   /* Amp of parallel formants in dB,    0 to   80       */
-	int Bphz[10]; /* Parallel formants bw in Hz,       40 to 1000      */
+	int32_t F0hz10; /* Voicing fund freq in Hz                          */
+	int32_t AVdb;   /* Amp of voicing in dB,            0 to   70       */
+	int32_t Fhz[10];  // formant Hz, F_NZ to F6 to F_NP
+	int32_t Bhz[10];
+	int32_t Ap[10];   /* Amp of parallel formants in dB,    0 to   80       */
+	int32_t Bphz[10]; /* Parallel formants bw in Hz,       40 to 1000      */
 
-	int ASP;    /* Amp of aspiration in dB,         0 to   70       */
-	int Kopen;  /* # of samples in open period,     10 to   65      */
-	int Aturb;  /* Breathiness in voicing,          0 to   80       */
-	int TLTdb;  /* Voicing spectral tilt in dB,     0 to   24       */
-	int AF;     /* Amp of frication in dB,          0 to   80       */
-	int Kskew;  /* Skewness of alternate periods,   0 to   40 in sample#/2  */
+	int32_t ASP;    /* Amp of aspiration in dB,         0 to   70       */
+	int32_t Kopen;  /* # of samples in open period,     10 to   65      */
+	int32_t Aturb;  /* Breathiness in voicing,          0 to   80       */
+	int32_t TLTdb;  /* Voicing spectral tilt in dB,     0 to   24       */
+	int32_t AF;     /* Amp of frication in dB,          0 to   80       */
+	int32_t Kskew;  /* Skewness of alternate periods,   0 to   40 in sample#/2  */
 
-	int AB;     /* Amp of bypass fric. in dB,       0 to   80       */
-	int AVpdb;  /* Amp of voicing,  par in dB,      0 to   70       */
-	int Gain0;  /* Overall gain, 60 dB is unity,    0 to   60       */
+	int32_t AB;     /* Amp of bypass fric. in dB,       0 to   80       */
+	int32_t AVpdb;  /* Amp of voicing,  par in dB,      0 to   70       */
+	int32_t Gain0;  /* Overall gain, 60 dB is unity,    0 to   60       */
 
-	int AVdb_tmp;      //copy of AVdb, which is changed within parwave()
-	int Fhz_next[10];    // Fhz for the next chunk, so we can do interpolation of resonator (a,b,c) parameters
-	int Bhz_next[10];
+	int32_t AVdb_tmp;      //copy of AVdb, which is changed within parwave()
+	int32_t Fhz_next[10];    // Fhz for the next chunk, so we can do interpolation of resonator (a,b,c) parameters
+	int32_t Bhz_next[10];
  } klatt_frame_t, *klatt_frame_ptr;
 
 
 typedef struct {
-	int freq;     // Hz
-	int bw;   // klatt bandwidth
-	int ap;   // parallel amplitude
-	int bp;   // parallel bandwidth
-	DOUBLEX freq1; // floating point versions of the above
+	int32_t freq;     // Hz
+	int32_t bw;   // klatt bandwidth
+	int32_t ap;   // parallel amplitude
+	int32_t bp;   // parallel bandwidth
+	DOUBLEX freq1; // floating pointversions of the above
 	DOUBLEX bw1;
 	DOUBLEX ap1;
 	DOUBLEX bp1;

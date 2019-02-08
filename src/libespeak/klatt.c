@@ -42,8 +42,8 @@ extern unsigned char *out_ptr;   // **JSD
 extern unsigned char *out_start;
 extern unsigned char *out_end;
 extern WGEN_DATA wdata;
-static int nsamples;
-static int sample_count;
+static int32_t nsamples;
+static int32_t sample_count;
 
 
 #ifdef _MSC_VER
@@ -56,7 +56,7 @@ static int sample_count;
 /* function prototypes for functions private to this file */
 
 static void flutter(klatt_frame_ptr);
-static double sampled_source (int);
+static double sampled_source (int32_t);
 static double impulsive_source (void);
 static double natural_source (void);
 static void pitch_synch_par_reset (klatt_frame_ptr);
@@ -71,10 +71,10 @@ static klatt_global_t kt_globals;
 
 #define NUMBER_OF_SAMPLES 100
 
-static int scale_wav_tab[] = {45,38,45,45,55};   // scale output from different voicing sources
+static int32_t scale_wav_tab[] = {45,38,45,45,55};   // scale output from different voicing sources
 
 // For testing, this can be overwritten in KlattInit()
-	static short natural_samples2[256]= {
+	static int16_t natural_samples2[256]= {
   2583,  2516,  2450,  2384,  2319,  2254,  2191,  2127,
   2067,  2005,  1946,  1890,  1832,  1779,  1726,  1675,
   1626,  1579,  1533,  1491,  1449,  1409,  1372,  1336,
@@ -108,7 +108,7 @@ static int scale_wav_tab[] = {45,38,45,45,55};   // scale output from different 
  -1680, -1732, -1783, -1839, -1894, -1952, -2010, -2072,
  -2133, -2196, -2260, -2325, -2390, -2456, -2522, -2589,
 };
-	static short natural_samples[100]=
+	static int16_t natural_samples[100]=
 	{
 		-310,-400,530,356,224,89,23,-10,-58,-16,461,599,536,701,770,
 		605,497,461,560,404,110,224,131,104,-97,155,278,-154,-1165,
@@ -200,7 +200,7 @@ slowly varying sine waves.
 
 static void flutter(klatt_frame_ptr frame)
 {
-	static int time_count;
+	static int32_t time_count;
 	double delta_f0;
 	double fla,flb,flc,fld,fle;
 
@@ -226,14 +226,14 @@ Allows the use of a glottal excitation waveform sampled from a real
 voice.
 */
 
-static double sampled_source(int source_num)
+static double sampled_source(int32_t source_num)
 {
-	int itemp;
+	int32_t itemp;
 	double ftemp;
 	double result;
 	double diff_value;
-	int current_value;
-	int next_value;
+	int32_t current_value;
+	int32_t next_value;
 	double temp_diff;
 	short *samples;
 
@@ -283,10 +283,10 @@ Converts synthesis parameters to a waveform.
 */
 
 
-static int parwave(klatt_frame_ptr frame)
+static int32_t parwave(klatt_frame_ptr frame)
 {
 	double temp;
-	int value;
+	int32_t value;
 	double outbypas;
 	double out;
 	long n4;
@@ -300,7 +300,7 @@ static int parwave(klatt_frame_ptr frame)
 	static double vlast;
 	static double glotlast;
 	static double sourc;
-	int ix;
+	int32_t ix;
 
 	flutter(frame);  /* add f0 flutter */
 
@@ -489,9 +489,9 @@ if(option_log_frames)
 
 		// mix with a recorded WAV if required for this phoneme
 		{
-			int z2;
+			int32_t z2;
 			signed char c;
-			int sample;
+			int32_t sample;
 
 			z2 = 0;
 			if(wdata.mix_wavefile_ix < wdata.n_mix_wavefile)
@@ -555,9 +555,9 @@ if(option_log_frames)
 
 
 
-void KlattReset(int control)
+void KlattReset(int32_t control)
 {
-	int r_ix;
+	int32_t r_ix;
 
 	if(control == 2)
 	{
@@ -604,7 +604,7 @@ static void frame_init(klatt_frame_ptr frame)
 	double amp_par[7];
 	static double amp_par_factor[7] = {0.6, 0.4, 0.15, 0.06, 0.04, 0.022, 0.03};
 	long Gain0_tmp;
-	int ix;
+	int32_t ix;
 
 	kt_globals.original_f0 = frame->F0hz10 / 10;
 
@@ -912,7 +912,7 @@ equation constants.
 */
 
 
-static void setabc(long int f, long int bw, resonator_ptr rp)
+static void setabc(long f, long bw, resonator_ptr rp)
 {
 	double r;
 	double arg;
@@ -940,7 +940,7 @@ Convert formant freqencies and bandwidth into anti-resonator difference
 equation constants.
 */
 
-static void setzeroabc(long int f, long int bw, resonator_ptr rp)
+static void setzeroabc(long f, long bw, resonator_ptr rp)
 {
 	double r;
 	double arg;
@@ -1051,20 +1051,20 @@ static double DBtoLIN(long dB)
 
 extern voice_t *wvoice;
 static klatt_peaks_t peaks[N_PEAKS];
-static int end_wave;
-static int klattp[N_KLATTP];
+static int32_t end_wave;
+static int32_t klattp[N_KLATTP];
 static double klattp1[N_KLATTP];
 static double klattp_inc[N_KLATTP];
 
 
 
 
-int Wavegen_Klatt(int resume)
+int32_t Wavegen_Klatt(int32_t resume)
 {//==========================
-	int pk;
-	int x;
-	int ix;
-	int fade;
+	int32_t pk;
+	int32_t x;
+	int32_t ix;
+	int32_t fade;
 
 	if(resume==0)
 	{
@@ -1178,12 +1178,12 @@ int Wavegen_Klatt(int resume)
 }
 
 
-void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v, int control)
+void SetSynth_Klatt(int32_t length, int32_t modn, frame_t *fr1, frame_t *fr2, voice_t *v, int32_t control)
 {//===========================================================================================
-	int ix;
+	int32_t ix;
 	DOUBLEX next;
-	int qix;
-	int cmd;
+	int32_t qix;
+	int32_t cmd;
 	frame_t *fr3;
 	static frame_t prev_fr;
 
@@ -1343,7 +1343,7 @@ if(option_log_frames)
 }  // end of SetSynth_Klatt
 
 
-int Wavegen_Klatt2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2)
+int32_t Wavegen_Klatt2(int32_t length, int32_t modulation, int32_t resume, frame_t *fr1, frame_t *fr2)
 {//===================================================================================
 	if(resume==0)
 		SetSynth_Klatt(length, modulation, fr1, fr2, wvoice, 1);
@@ -1361,7 +1361,7 @@ void KlattInit()
 	static short parallel_amp[10] = { 0,59,59,59,59,59,59,0,0,0};
 	static short parallel_bw[10] = {59,59,89,149,200,200,500,0,0,0};
 
-	int ix;
+	int32_t ix;
 
 for(ix=0; ix<256; ix++)
 {

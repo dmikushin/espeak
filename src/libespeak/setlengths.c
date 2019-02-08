@@ -28,9 +28,9 @@
 #include "voice.h"
 #include "translate.h"
 
-extern int GetAmplitude(void);
-extern void DoSonicSpeed(int value);
-extern int saved_parameters[];
+extern int32_t GetAmplitude(void);
+extern void DoSonicSpeed(int32_t value);
+extern int32_t saved_parameters[];
 
 
 // convert from words-per-minute to internal speed factor
@@ -126,9 +126,9 @@ static unsigned char wav_factor_350[] = {
   48,  47,  47,  45,  46,   // 445
   45};   // 450
 
-static int speed1 = 130;
-static int speed2 = 121;
-static int speed3 = 118;
+static int32_t speed1 = 130;
+static int32_t speed2 = 121;
+static int32_t speed3 = 118;
 
 
 
@@ -136,13 +136,13 @@ static int speed3 = 118;
 
 #ifdef INCLUDE_SONIC
 
-void SetSpeed(int control)
+void SetSpeed(int32_t control)
 {//=======================
-	int x;
-	int s1;
-	int wpm;
-	int wpm2;
-	int wpm_value;
+	int32_t x;
+	int32_t s1;
+	int32_t wpm;
+	int32_t wpm2;
+	int32_t wpm_value;
 	double sonic;
 
 	speed.loud_consonants = 0;
@@ -317,13 +317,13 @@ printf("%3d: speedf %d %d %d   pause=%d %d   wav=%d  lenmod=%d %d\n",wpm,speed1,
 
 #else  // not using sonic speed-up
 
-void SetSpeed(int control)
+void SetSpeed(int32_t control)
 {//=======================
 // This is the earlier version of SetSpeed() before sonic speed-up was added
-	int x;
-	int s1;
-	int wpm;
-	int wpm2;
+	int32_t x;
+	int32_t s1;
+	int32_t wpm;
+	int32_t wpm2;
 
 	speed.loud_consonants = 0;
 	speed.min_sample_len = 450;
@@ -458,7 +458,7 @@ printf("%3d: speedf %d %d %d   pause=%d %d   wav=%d  lenmod=%d %d\n",wpm,speed1,
 
 
 #ifdef deleted
-void SetAmplitude(int amp)
+void SetAmplitude(int32_t amp)
 {//=======================
 	static unsigned char amplitude_factor[] = {0,5,6,7,9,11,14,17,21,26, 32, 38,44,50,56,63,70,77,84,91,100 };
 
@@ -471,13 +471,13 @@ void SetAmplitude(int amp)
 
 
 
-void SetParameter(int parameter, int value, int relative)
+void SetParameter(int32_t parameter, int32_t value, int32_t relative)
 {//======================================================
 // parameter: reset-all, amp, pitch, speed, linelength, expression, capitals, number grouping
 // relative 0=absolute  1=relative
 
-	int new_value = value;
-	int default_value;
+	int32_t new_value = value;
+	int32_t default_value;
 
 	if(relative)
 	{
@@ -535,11 +535,11 @@ void SetParameter(int parameter, int value, int relative)
 
 
 
-static void DoEmbedded2(int *embix)
+static void DoEmbedded2(int32_t *embix)
 {//================================
 	// There were embedded commands in the text at this point
 
-	unsigned int word;
+	uint32_t word;
 
 	do {
 		word = embedded_list[(*embix)++];
@@ -556,8 +556,8 @@ static void DoEmbedded2(int *embix)
 
 void CalcLengths(Translator *tr)
 {//==============================
-	int ix;
-	int ix2;
+	int32_t ix;
+	int32_t ix2;
 	PHONEME_LIST *prev;
 	PHONEME_LIST *next;
 	PHONEME_LIST *next2;
@@ -565,23 +565,23 @@ void CalcLengths(Translator *tr)
 	PHONEME_LIST *p;
 	PHONEME_LIST *p2;
 
-	int  stress;
-	int  type;
-	static int  more_syllables=0;
-	int  pre_sonorant=0;
-	int  pre_voiced=0;
-	int  last_pitch = 0;
-	int  pitch_start;
-	int  length_mod;
-	int  next2type;
-	int  len;
-	int  env2;
-	int  end_of_clause;
-	int  embedded_ix = 0;
-	int  min_drop;
-	int  pitch1;
-	int emphasized;
-	int  tone_mod;
+	int32_t  stress;
+	int32_t  type;
+	static int32_t  more_syllables=0;
+	int32_t  pre_sonorant=0;
+	int32_t  pre_voiced=0;
+	int32_t  last_pitch = 0;
+	int32_t  pitch_start;
+	int32_t  length_mod;
+	int32_t  next2type;
+	int32_t  len;
+	int32_t  env2;
+	int32_t  end_of_clause;
+	int32_t  embedded_ix = 0;
+	int32_t  min_drop;
+	int32_t  pitch1;
+	int32_t emphasized;
+	int32_t  tone_mod;
 	unsigned char *pitch_env=NULL;
 	PHONEME_DATA phdata_tone;
 

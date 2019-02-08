@@ -29,21 +29,21 @@
 #include "synthesize.h"
 #include "translate.h"
 
-extern void Write4Bytes(FILE *f, int value);
-int HashDictionary(const char *string);
+extern void Write4Bytes(FILE *f, int32_t value);
+int32_t HashDictionary(const char *string);
 
 static FILE *f_log = NULL;
 extern char *dir_dictionary;
 
 extern char word_phonemes[N_WORD_PHONEMES];    // a word translated into phoneme codes
 
-static int linenum;
-static int error_count;
-static int text_mode = 0;
-static int debug_flag = 0;
-static int error_need_dictionary = 0;
+static int32_t linenum;
+static int32_t error_count;
+static int32_t text_mode = 0;
+static int32_t debug_flag = 0;
+static int32_t error_need_dictionary = 0;
 
-static int hash_counts[N_HASH_DICT];
+static int32_t hash_counts[N_HASH_DICT];
 static char *hash_chains[N_HASH_DICT];
 static char letterGroupsDefined[N_LETTER_GROUPS];
 
@@ -148,16 +148,16 @@ MNEM_TAB mnem_flags[] = {
 
 typedef struct {
 	char name[LEN_GROUP_NAME+1];
-	unsigned int start;
-	unsigned int length;
-	int group3_ix;
+	uint32_t start;
+	uint32_t length;
+	int32_t group3_ix;
 } RGROUP;
 
 
-int isspace2(unsigned int c)
+int32_t isspace2(uint32_t c)
 {//=========================
 // can't use isspace() because on Windows, isspace(0xe1) gives TRUE !
-	int c2;
+	int32_t c2;
 
 	if(((c2 = (c & 0xff)) == 0) || (c > ' '))
 		return(0);
@@ -180,7 +180,7 @@ static FILE *fopen_log(const char *fname,const char *access)
 }
 
 
-const char *LookupMnemName(MNEM_TAB *table, const int value)
+const char *LookupMnemName(MNEM_TAB *table, const int32_t value)
 //==========================================================
 /* Lookup a mnemonic string in a table, return its name */
 {
@@ -194,13 +194,13 @@ const char *LookupMnemName(MNEM_TAB *table, const int value)
 }   /* end of LookupMnemValue */
 
 
-void print_dictionary_flags(unsigned int *flags, char *buf, int buf_len)
+void print_dictionary_flags(uint32_t *flags, char *buf, int32_t buf_len)
 {//========================================================================
-	int stress;
-	int ix;
+	int32_t stress;
+	int32_t ix;
 	const char *name;
-	int len;
-	int total = 0;
+	int32_t len;
+	int32_t total = 0;
 
 	buf[0] = 0;
 	if((stress = flags[0] & 0xf) != 0)
@@ -228,7 +228,7 @@ void print_dictionary_flags(unsigned int *flags, char *buf, int buf_len)
 
 
 
-char *DecodeRule(const char *group_chars, int group_length, char *rule, int control)
+char *DecodeRule(const char *group_chars, int32_t group_length, char *rule, int32_t control)
 {//=================================================================================
 	/* Convert compiled match template to ascii */
 
@@ -236,15 +236,15 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 	unsigned char c;
 	char *p;
 	char *p_end;
-	int  ix;
-	int  match_type;
-	int  finished=0;
-	int  value;
-	int  linenum=0;
-	int  flags;
-	int  suffix_char;
-	int  condition_num=0;
-	int  at_start = 0;
+	int32_t  ix;
+	int32_t  match_type;
+	int32_t  finished=0;
+	int32_t  value;
+	int32_t  linenum=0;
+	int32_t  flags;
+	int32_t  suffix_char;
+	int32_t  condition_num=0;
+	int32_t  at_start = 0;
 	const char *name;
 	char buf[200];
 	char buf_pre[200];
@@ -404,35 +404,35 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 
 
 
-static int compile_line(char *linebuf, char *dict_line, int *hash)
+static int32_t compile_line(char *linebuf, char *dict_line, int32_t *hash)
 {//===============================================================
 // Compile a line in the language_list file
 	unsigned char  c;
 	char *p;
 	char *word;
 	char *phonetic;
-	unsigned int  ix;
-	int  step;
-	unsigned int  n_flag_codes = 0;
-	int flagnum;
-	int  flag_offset;
-	int  length;
-	int  multiple_words = 0;
-	int  multiple_numeric_hyphen = 0;
+	uint32_t  ix;
+	int32_t  step;
+	uint32_t  n_flag_codes = 0;
+	int32_t flagnum;
+	int32_t  flag_offset;
+	int32_t  length;
+	int32_t  multiple_words = 0;
+	int32_t  multiple_numeric_hyphen = 0;
 	char *multiple_string = NULL;
 	char *multiple_string_end = NULL;
 
-	int len_word;
-	int len_phonetic;
-	int text_not_phonemes;   // this word specifies replacement text, not phonemes
-	unsigned int  wc;
-	int all_upper_case;
+	int32_t len_word;
+	int32_t len_phonetic;
+	int32_t text_not_phonemes;   // this word specifies replacement text, not phonemes
+	uint32_t  wc;
+	int32_t all_upper_case;
 
 	char *mnemptr;
 	unsigned char flag_codes[100];
 	char encoded_ph[200];
 	char bad_phoneme_str[4];
-	int bad_phoneme;
+	int32_t bad_phoneme;
 	static char nullstring[] = {0};
 
 	text_not_phonemes = 0;
@@ -698,7 +698,7 @@ static int compile_line(char *linebuf, char *dict_line, int *hash)
 	else if(word[0] != '_')
 	{
 		// convert to lower case, and note if the word is all-capitals
-		int c2;
+		int32_t c2;
 
 		all_upper_case = 1;
 		p = word;
@@ -788,7 +788,7 @@ static int compile_line(char *linebuf, char *dict_line, int *hash)
 static void compile_dictlist_start(void)
 {//=====================================
 // initialise dictionary list
-	int ix;
+	int32_t ix;
 	char *p;
 	char *p2;
 
@@ -810,8 +810,8 @@ static void compile_dictlist_start(void)
 static void compile_dictlist_end(FILE *f_out)
 {//==========================================
 // Write out the compiled dictionary list
-	int hash;
-	int length;
+	int32_t hash;
+	int32_t length;
 	char *p;
 
 	if(f_log != NULL)
@@ -844,12 +844,12 @@ static void compile_dictlist_end(FILE *f_out)
 
 
 
-static int compile_dictlist_file(const char *path, const char* filename)
+static int32_t compile_dictlist_file(const char *path, const char* filename)
 {//=====================================================================
-	int  length;
-	int  hash;
+	int32_t  length;
+	int32_t  hash;
 	char *p;
-	int  count=0;
+	int32_t  count=0;
 	FILE *f_in;
 	char buf[200];
 	char fname[sizeof(path_home)+45];
@@ -909,13 +909,13 @@ static char rule_post[80];
 static char rule_match[80];
 static char rule_phonemes[80];
 static char group_name[LEN_GROUP_NAME+1];
-static int group3_ix;
+static int32_t group3_ix;
 
 #define N_RULES 2000		// max rules for each group
 
 
 
-int isHexDigit(int c)
+int32_t isHexDigit(int32_t c)
 {
 	if((c >= '0') && (c <= '9'))
 		return(c - '0');
@@ -927,22 +927,22 @@ int isHexDigit(int c)
 }
 
 
-static void copy_rule_string(char *string, int *state_out)
+static void copy_rule_string(char *string, int32_t *state_out)
 {//=======================================================
 // state 0: conditional, 1=pre, 2=match, 3=post, 4=phonemes
 	static char *outbuf[5] = {rule_cond, rule_pre, rule_match, rule_post, rule_phonemes};
-	static int next_state[5] = {2,2,4,4,4};
+	static int32_t next_state[5] = {2,2,4,4,4};
 	char *output;
 	char *p;
-	int ix;
-	int len;
+	int32_t ix;
+	int32_t len;
 	char c;
-	int c2, c3;
-	int  sxflags;
-	int  value;
-	int  literal;
-	int  hexdigit_input = 0;
-	int state = *state_out;
+	int32_t c2, c3;
+	int32_t  sxflags;
+	int32_t  value;
+	int32_t  literal;
+	int32_t  hexdigit_input = 0;
+	int32_t state = *state_out;
 	MNEM_TAB *mr;
 
 	if(string[0] == 0) return;
@@ -1202,19 +1202,19 @@ static void copy_rule_string(char *string, int *state_out)
 
 static char *compile_rule(char *input)
 {//===================================
-	int ix;
+	int32_t ix;
 	unsigned char c;
-	int wc;
+	int32_t wc;
 	char *p;
 	char *prule;
-	int len;
-	int len_name;
-	int start;
-	int state=2;
-	int finish=0;
+	int32_t len;
+	int32_t len_name;
+	int32_t start;
+	int32_t state=2;
+	int32_t finish=0;
 	char buf[80];
 	char output[150];
-	int bad_phoneme;
+	int32_t bad_phoneme;
 	char bad_phoneme_str[4];
 
 	buf[0]=0;
@@ -1385,10 +1385,10 @@ static char *compile_rule(char *input)
 }  //  end of compile_rule
 
 
-int __cdecl string_sorter(char **a, char **b)
+int32_t __cdecl string_sorter(char **a, char **b)
 {//===========================================
 	char *pa, *pb;
-	int ix;
+	int32_t ix;
 
 	if((ix = strcmp(pa = *a,pb = *b)) != 0)
 		return(ix);
@@ -1398,10 +1398,10 @@ int __cdecl string_sorter(char **a, char **b)
 }   /* end of string_sorter */
 
 
-static int __cdecl rgroup_sorter(RGROUP *a, RGROUP *b)
+static int32_t __cdecl rgroup_sorter(RGROUP *a, RGROUP *b)
 {//===================================================
 // Sort long names before short names
-	int ix;
+	int32_t ix;
 	ix = strlen(b->name) - strlen(a->name);
 	if(ix != 0) return(ix);
 	ix = strcmp(a->name,b->name);
@@ -1411,17 +1411,17 @@ static int __cdecl rgroup_sorter(RGROUP *a, RGROUP *b)
 
 
 #ifdef OUTPUT_FORMAT
-static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
+static void print_rule_group(FILE *f_out, int32_t n_rules, char **rules, char *name)
 {//=============================================================================
-	int rule;
-	int ix;
+	int32_t rule;
+	int32_t ix;
 	unsigned char c;
-	int len1;
-	int len2;
-	int spaces;
+	int32_t len1;
+	int32_t len2;
+	int32_t spaces;
 	char *p;
 	char *pout;
-	int condition;
+	int32_t condition;
 	char buf[80];
 	char suffix[12];
 
@@ -1518,12 +1518,12 @@ static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 
 
 //#define LIST_GROUP_INFO
-static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
+static void output_rule_group(FILE *f_out, int32_t n_rules, char **rules, char *name)
 {//==============================================================================
-	int ix;
-	int len1;
-	int len2;
-	int len_name;
+	int32_t ix;
+	int32_t len1;
+	int32_t len2;
+	int32_t len_name;
 	char *p;
 	char *p2, *p3;
 	const char *common;
@@ -1539,7 +1539,7 @@ static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name
 
 	// sort the rules in this group by their phoneme string
 	common = "";
-	qsort((void *)rules,n_rules,sizeof(char *),(int (__cdecl *)(const void *,const void *))string_sorter);
+	qsort((void *)rules,n_rules,sizeof(char *),(int32_t (__cdecl *)(const void *,const void *))string_sorter);
 
 	if(strcmp(name,"9")==0)
 		len_name = 0;    //  don't remove characters from numeric match strings
@@ -1584,15 +1584,15 @@ static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name
 
 
 
-static int compile_lettergroup(char *input, FILE *f_out)
+static int32_t compile_lettergroup(char *input, FILE *f_out)
 {//=====================================================
 	char *p;
 	char *p_start;
-	int group;
-	int ix;
-	int n_items;
-	int length;
-	int max_length = 0;
+	int32_t group;
+	int32_t ix;
+	int32_t n_items;
+	int32_t length;
+	int32_t max_length = 0;
 
 #define N_LETTERGP_ITEMS 200
 	char *items[N_LETTERGP_ITEMS];
@@ -1665,27 +1665,27 @@ static int compile_lettergroup(char *input, FILE *f_out)
 }
 
 
-static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
+static int32_t compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 {//====================================================================
 	char *prule;
 	unsigned char *p;
-	int ix;
-	int c;
-	int gp;
+	int32_t ix;
+	int32_t c;
+	int32_t gp;
 	FILE *f_temp;
-	int n_rules=0;
-	int count=0;
-	int different;
-	int wc;
+	int32_t n_rules=0;
+	int32_t count=0;
+	int32_t different;
+	int32_t wc;
 	const char *prev_rgroup_name;
-	unsigned int char_code;
-	int compile_mode=0;
+	uint32_t char_code;
+	int32_t compile_mode=0;
 	char *buf;
 	char buf1[500];
 	char *rules[N_RULES];
 
-	int n_rgroups = 0;
-	int n_groups3 = 0;
+	int32_t n_rgroups = 0;
+	int32_t n_groups3 = 0;
 	RGROUP rgroup[N_RULE_GROUP2];
 
 	linenum = 0;
@@ -1812,8 +1812,8 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 
 		case 2:   //  .replace
 		{
-			int replace1;
-			int replace2;
+			int32_t replace1;
+			int32_t replace2;
 			char *p;
 
 			p = buf;
@@ -1846,7 +1846,7 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 	}
 	fclose(f_temp);
 
-	qsort((void *)rgroup,n_rgroups,sizeof(rgroup[0]),(int (__cdecl *)(const void *,const void *))rgroup_sorter);
+	qsort((void *)rgroup,n_rgroups,sizeof(rgroup[0]),(int32_t (__cdecl *)(const void *,const void *))rgroup_sorter);
 
 	if((f_temp = fopen(fname_temp,"rb"))==NULL)
 		return(2);
@@ -1899,15 +1899,15 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 
 
 
-int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, char *fname_err, int flags)
+int32_t CompileDictionary(const char *dsource, const char *dict_name, FILE *log, char *fname_err, int32_t flags)
 {//=====================================================================================================
 // fname:  space to write the filename in case of error
 // flags: bit 0:  include source line number information, for debug purposes.
 
 	FILE *f_in;
 	FILE *f_out;
-	int offset_rules=0;
-	int value;
+	int32_t offset_rules=0;
+	int32_t value;
 	char fname_in[sizeof(path_home)+45];
 	char fname_out[sizeof(path_home)+15];
 	char fname_temp[sizeof(path_home)+15];

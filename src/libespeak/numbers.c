@@ -63,15 +63,15 @@
 #define M_MIDDLE_DOT  M_DOT_ABOVE  // duplicate of M_DOT_ABOVE
 #define M_IMPLOSIVE   M_HOOK
 
-static int n_digit_lookup;
+static int32_t n_digit_lookup;
 static char *digit_lookup;
-static int speak_missing_thousands;
-static int number_control;
+static int32_t speak_missing_thousands;
+static int32_t number_control;
 
 
 typedef struct {
 	const char *name;
-	int  flags;
+	int32_t  flags;
 } ACCENTS;
 
 // these are tokens to look up in the *_list file.
@@ -388,9 +388,9 @@ static const unsigned short letter_accents_250[] = {
 	LIGATURE('t','s',M_CURL),
 };
 
-static int LookupLetter2(Translator *tr, unsigned int letter, char *ph_buf)
+static int32_t LookupLetter2(Translator *tr, uint32_t letter, char *ph_buf)
 {	//========================================================================
-	int len;
+	int32_t len;
 	char single_letter[10];
 
 	single_letter[0] = 0;
@@ -411,14 +411,14 @@ static int LookupLetter2(Translator *tr, unsigned int letter, char *ph_buf)
 }
 
 
-void LookupAccentedLetter(Translator *tr, unsigned int letter, char *ph_buf)
+void LookupAccentedLetter(Translator *tr, uint32_t letter, char *ph_buf)
 {//=========================================================================
 	// lookup the character in the accents table
-	int accent_data = 0;
-	int accent1 = 0;
-	int accent2 = 0;
-	int basic_letter;
-	int letter2=0;
+	int32_t accent_data = 0;
+	int32_t accent1 = 0;
+	int32_t accent2 = 0;
+	int32_t basic_letter;
+	int32_t letter2=0;
 	char ph_letter1[30];
 	char ph_letter2[30];
 	char ph_accent1[30];
@@ -495,13 +495,13 @@ void LookupAccentedLetter(Translator *tr, unsigned int letter, char *ph_buf)
 
 
 
-void LookupLetter(Translator *tr, unsigned int letter, int next_byte, char *ph_buf1, int control)
+void LookupLetter(Translator *tr, uint32_t letter, int32_t next_byte, char *ph_buf1, int32_t control)
 {//==============================================================================================
 // control, bit 0:  not the first letter of a word
 
-	int len;
+	int32_t len;
 	static char single_letter[10] = {0,0};
-	unsigned int dict_flags[2];
+	uint32_t dict_flags[2];
 	char ph_buf3[40];
 
 	ph_buf1[0] = 0;
@@ -577,18 +577,18 @@ void LookupLetter(Translator *tr, unsigned int letter, int next_byte, char *ph_b
 
 
 // unicode ranges for non-ascii digits 0-9
-static const int number_ranges[] = {
+static const int32_t number_ranges[] = {
 	0x660, 0x6f0,  // arabic
 	0x966, 0x9e6, 0xa66, 0xae6, 0xb66, 0xbe6, 0xc66, 0xce6, 0xd66,  // indic
 	0xe50, 0xed0, 0xf20, 0x1040, 0x1090,
 	0 };  // these must be in ascending order
 
 
-int NonAsciiNumber(int letter)
+int32_t NonAsciiNumber(int32_t letter)
 {//============================
 // Change non-ascii digit into ascii digit '0' to '9', (or -1 if not)
-	const int *p;
-	int base;
+	const int32_t *p;
+	int32_t base;
 
 	for(p=number_ranges; (base = *p) != 0; p++)
 	{
@@ -675,11 +675,11 @@ static unsigned short derived_letters[] = {
 static const char *hex_letters[] = {"'e:j","b'i:","s'i:","d'i:","'i:","'ef"};  // names, using phonemes available to all languages
 
 
-int IsSuperscript(int letter)
+int32_t IsSuperscript(int32_t letter)
 {//===========================
 // is this a subscript or superscript letter ?
-	int ix;
-	int c;
+	int32_t ix;
+	int32_t c;
 
 	for(ix=0; (c = derived_letters[ix]) != 0; ix+=2)
 	{
@@ -693,7 +693,7 @@ int IsSuperscript(int letter)
 
 
 
-int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
+int32_t TranslateLetter(Translator *tr, char *word, char *phonemes, int32_t control)
 {//=========================================================================
 // get pronunciation for an isolated letter
 // return number of bytes used by the letter
@@ -701,21 +701,21 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 //         bit 1:  say 'capital'
 //         bit 2:  say character code for unknown letters
 
-	int n_bytes;
-	int letter;
-	int len;
-	int ix;
-	int c;
+	int32_t n_bytes;
+	int32_t letter;
+	int32_t len;
+	int32_t ix;
+	int32_t c;
 	char *p2;
 	char *pbuf;
 	const char *modifier;
 	ALPHABET *alphabet;
-	int al_offset;
-	int al_flags;
-	int language;
-	int number;
-	int phontab_1;
-	int speak_letter_number;
+	int32_t al_offset;
+	int32_t al_flags;
+	int32_t language;
+	int32_t number;
+	int32_t phontab_1;
+	int32_t speak_letter_number;
 	char capital[30];
 	char ph_buf[80];
 	char ph_buf2[80];
@@ -853,7 +853,7 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 		if((language != tr->translator_name) || (language == L('k','o')))
 		{
 			char *p3;
-			int initial, code;
+			int32_t initial, code;
 			char hangul_buf[12];
 
 			// speak in the language for this alphabet (or English)
@@ -990,14 +990,14 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 
 
 
-void SetSpellingStress(Translator *tr, char *phonemes, int control, int n_chars)
+void SetSpellingStress(Translator *tr, char *phonemes, int32_t control, int32_t n_chars)
 {//=============================================================================
 // Individual letter names, reduce the stress of some.
-	int ix;
-	unsigned int c;
-	int n_stress=0;
-	int prev = 0;
-	int count;
+	int32_t ix;
+	uint32_t c;
+	int32_t n_stress=0;
+	int32_t prev = 0;
+	int32_t count;
 	unsigned char buf[N_WORD_PHONEMES];
 
 	for(ix=0; (c = phonemes[ix]) != 0; ix++)
@@ -1060,12 +1060,12 @@ static char ph_ordinal2[12];
 static char ph_ordinal2x[12];
 
 
-static int CheckDotOrdinal(Translator *tr, char *word, char *word_end, WORD_TAB *wtab, int roman)
+static int32_t CheckDotOrdinal(Translator *tr, char *word, char *word_end, WORD_TAB *wtab, int32_t roman)
 {//==============================================================================================
 
-	int ordinal = 0;
-	int c2;
-	int nextflags;
+	int32_t ordinal = 0;
+	int32_t c2;
+	int32_t nextflags;
 
 	if((tr->langopts.numbers & NUM_ORDINAL_DOT) && ((word_end[0] == '.') || (wtab[0].flags & FLAG_HAS_DOT)) && !(wtab[1].flags & FLAG_NOSPACE))
 	{
@@ -1116,7 +1116,7 @@ static int CheckDotOrdinal(Translator *tr, char *word, char *word_end, WORD_TAB 
 }  // end of CheckDotOrdinal
 
 
-static int hu_number_e(const char *word, int thousandplex, int value)
+static int32_t hu_number_e(const char *word, int32_t thousandplex, int32_t value)
 {//==================================================================
 // lang-hu: variant form of numbers when followed by hyphen and a suffix starting with 'a' or 'e' (but not a, e, az, ez, azt, ezt, att. ett
 
@@ -1135,25 +1135,25 @@ static int hu_number_e(const char *word, int thousandplex, int value)
 
 
 
-int TranslateRoman(Translator *tr, char *word, char *ph_out, WORD_TAB *wtab)
+int32_t TranslateRoman(Translator *tr, char *word, char *ph_out, WORD_TAB *wtab)
 {//=========================================================================
-	int c;
+	int32_t c;
 	char *p;
 	const char *p2;
-	int acc;
-	int prev;
-	int value;
-	int subtract;
-	int repeat = 0;
-	int n_digits = 0;
+	int32_t acc;
+	int32_t prev;
+	int32_t value;
+	int32_t subtract;
+	int32_t repeat = 0;
+	int32_t n_digits = 0;
 	char *word_start;
-	int num_control = 0;
-	unsigned int flags[2];
+	int32_t num_control = 0;
+	uint32_t flags[2];
 	char ph_roman[30];
 	char number_chars[N_WORD_BYTES];
 
 	static const char *roman_numbers = "ixcmvld";
-	static int roman_values[] = {1,10,100,1000,5,50,500};
+	static int32_t roman_values[] = {1,10,100,1000,5,50,500};
 
 	acc = 0;
 	prev = 0;
@@ -1267,11 +1267,11 @@ int TranslateRoman(Translator *tr, char *word, char *ph_out, WORD_TAB *wtab)
 }  // end of TranslateRoman
 
 
-static const char *M_Variant(int value)
+static const char *M_Variant(int32_t value)
 {//====================================
 	// returns M, or perhaps MA or MB for some cases
 
-	int teens = 0;
+	int32_t teens = 0;
 
 	if(((value % 100) > 10) && ((value % 100) < 20))
 		teens = 1;
@@ -1314,11 +1314,11 @@ static const char *M_Variant(int value)
 }
 
 
-static int LookupThousands(Translator *tr, int value, int thousandplex, int thousands_exact, char *ph_out)
+static int32_t LookupThousands(Translator *tr, int32_t value, int32_t thousandplex, int32_t thousands_exact, char *ph_out)
 {//=======================================================================================================
 // thousands_exact:  bit 0  no hundreds,tens,or units,  bit 1  ordinal numberr
-	int found;
-	int found_value=0;
+	int32_t found;
+	int32_t found_value=0;
 	char string[12];
 	char ph_of[12];
 	char ph_thousands[40];
@@ -1422,7 +1422,7 @@ static int LookupThousands(Translator *tr, int value, int thousandplex, int thou
 }  // end f LookupThousands
 
 
-static int LookupNum2(Translator *tr, int value, int thousandplex, const int control, char *ph_out)
+static int32_t LookupNum2(Translator *tr, int32_t value, int32_t thousandplex, const int32_t control, char *ph_out)
 {//=============================================================================
 // Lookup a 2 digit number
 // control bit 0: ordinal number
@@ -1434,15 +1434,15 @@ static int LookupNum2(Translator *tr, int value, int thousandplex, const int con
 //         bit 8   followed by decimal fraction
 //         bit 9: use #f form for both tens and units (lang=ml)
 
-	int found;
-	int ix;
-	int units;
-	int tens;
-	int is_ordinal;
-	int used_and=0;
-	int found_ordinal = 0;
-	int next_phtype;
-	int ord_type = 'o';
+	int32_t found;
+	int32_t ix;
+	int32_t units;
+	int32_t tens;
+	int32_t is_ordinal;
+	int32_t used_and=0;
+	int32_t found_ordinal = 0;
+	int32_t next_phtype;
+	int32_t ord_type = 'o';
 	char string[12];  // for looking up entries in *_list
 	char ph_ordinal[20];
 	char ph_tens[50];
@@ -1675,10 +1675,10 @@ static int LookupNum2(Translator *tr, int value, int thousandplex, const int con
 				// remove vowel from the end of tens if units starts with a vowel (LANG=Italian)
 				if(((ix = strlen(ph_tens)-1) >= 0) && (ph_digits[0] != 0))
 				{
-					if((next_phtype = phoneme_tab[(unsigned int)(ph_digits[0])]->type) == phSTRESS)
-						next_phtype = phoneme_tab[(unsigned int)(ph_digits[1])]->type;
+					if((next_phtype = phoneme_tab[(uint32_t)(ph_digits[0])]->type) == phSTRESS)
+						next_phtype = phoneme_tab[(uint32_t)(ph_digits[1])]->type;
 
-					if((phoneme_tab[(unsigned int)(ph_tens[ix])]->type == phVOWEL) && (next_phtype == phVOWEL))
+					if((phoneme_tab[(uint32_t)(ph_tens[ix])]->type == phVOWEL) && (next_phtype == phVOWEL))
 						ph_tens[ix] = 0;
 				}
 			}
@@ -1720,23 +1720,23 @@ static int LookupNum2(Translator *tr, int value, int thousandplex, const int con
 }  // end of LookupNum2
 
 
-static int LookupNum3(Translator *tr, int value, char *ph_out, int suppress_null, int thousandplex, int control)
+static int32_t LookupNum3(Translator *tr, int32_t value, char *ph_out, int32_t suppress_null, int32_t thousandplex, int32_t control)
 {//=============================================================================================================
 // Translate a 3 digit number
 //  control  bit 0,  previous thousands
 //           bit 1,  ordinal number
 //           bit 5   variant form of ordinal number
 //           bit 8   followed by decimal fraction
-	int found;
-	int hundreds;
-	int tensunits;
-	int x;
-	int ix;
-	int exact;
-	int ordinal;
-	int tplex;
-	int say_zero_hundred=0;
-	int say_one_hundred;
+	int32_t found;
+	int32_t hundreds;
+	int32_t tensunits;
+	int32_t x;
+	int32_t ix;
+	int32_t exact;
+	int32_t ordinal;
+	int32_t tplex;
+	int32_t say_zero_hundred=0;
+	int32_t say_one_hundred;
 	char string[12];  // for looking up entries in **_list
 	char buf1[100];
 	char buf2[100];
@@ -1972,10 +1972,10 @@ static int LookupNum3(Translator *tr, int value, char *ph_out, int suppress_null
 }  // end of LookupNum3
 
 
-bool CheckThousandsGroup(char *word, int group_len)
+bool CheckThousandsGroup(char *word, int32_t group_len)
 {//================================================
 // Is this a group of 3 digits which looks like a thousands group?
-	int ix;
+	int32_t ix;
 
 	if(IsDigit09(word[group_len]) || IsDigit09(-1))
 		return(false);
@@ -1989,32 +1989,32 @@ bool CheckThousandsGroup(char *word, int group_len)
 }
 
 
-static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned int *flags, WORD_TAB *wtab, int control)
+static int32_t TranslateNumber_1(Translator *tr, char *word, char *ph_out, uint32_t *flags, WORD_TAB *wtab, int32_t control)
 {//=====================================================================================================================
 //  Number translation with various options
 // the "word" may be up to 4 digits
 // "words" of 3 digits may be preceded by another number "word" for thousands or millions
 
-	int n_digits;
-	int value;
-	int ix;
-	int digix;
+	int32_t n_digits;
+	int32_t value;
+	int32_t ix;
+	int32_t digix;
 	unsigned char c;
-	int suppress_null = 0;
-	int decimal_point = 0;
-	int thousandplex = 0;
-	int thousands_exact = 1;
-	int thousands_inc = 0;
-	int prev_thousands = 0;
-	int ordinal = 0;
-	int this_value;
-	int decimal_count;
-	int max_decimal_count;
-	int decimal_mode;
-	int suffix_ix;
-	int skipwords = 0;
-	int group_len;
-	int len;
+	int32_t suppress_null = 0;
+	int32_t decimal_point = 0;
+	int32_t thousandplex = 0;
+	int32_t thousands_exact = 1;
+	int32_t thousands_inc = 0;
+	int32_t prev_thousands = 0;
+	int32_t ordinal = 0;
+	int32_t this_value;
+	int32_t decimal_count;
+	int32_t max_decimal_count;
+	int32_t decimal_mode;
+	int32_t suffix_ix;
+	int32_t skipwords = 0;
+	int32_t group_len;
+	int32_t len;
 	char *p;
 	char string[32];  // for looking up entries in **_list
 	char buf1[100];
@@ -2398,7 +2398,7 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 	}
 	if((ph_out[0] != 0) && (ph_out[0] != phonSWITCH))
 	{
-		int next_char;
+		int32_t next_char;
 		char *p;
 		p = &word[n_digits+1];
 
@@ -2421,7 +2421,7 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 
 
 
-int TranslateNumber(Translator *tr, char *word1, char *ph_out, unsigned int *flags, WORD_TAB *wtab, int control)
+int32_t TranslateNumber(Translator *tr, char *word1, char *ph_out, uint32_t *flags, WORD_TAB *wtab, int32_t control)
 {//=============================================================================================================
 	if((option_sayas == SAYAS_DIGITS1) || (wtab[0].flags & FLAG_INDIVIDUAL_DIGITS))
 		return(0);  // speak digits individually

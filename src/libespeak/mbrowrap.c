@@ -15,8 +15,9 @@
  * GNU General Public License for more details.
  */
 
-#include "speech.h"
 #ifdef INCLUDE_MBROLA
+
+#include "speech.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -48,16 +49,16 @@ enum mbr_state {
 static enum mbr_state mbr_state;
 
 static char *mbr_voice_path;
-static int mbr_cmd_fd, mbr_audio_fd, mbr_error_fd, mbr_proc_stat;
+static int32_t mbr_cmd_fd, mbr_audio_fd, mbr_error_fd, mbr_proc_stat;
 static pid_t mbr_pid;
-static int mbr_samplerate;
+static int32_t mbr_samplerate;
 static float mbr_volume = 1.0;
 static char mbr_errorbuf[160];
 
 struct datablock {
 	struct datablock *next;
-	int done;
-	int size;
+	int32_t done;
+	int32_t size;
 	char buffer[1];  /* 1 or more, dynamically allocated */
 };
 
@@ -87,9 +88,9 @@ static void err(const char *errmsg, ...)
 	log("mbrowrap error: %s", mbr_errorbuf);
 }
 
-static int create_pipes(int p1[2], int p2[2], int p3[2])
+static int32_t create_pipes(int32_t p1[2], int32_t p2[2], int32_t p3[2])
 {
-	int error;
+	int32_t error;
 
 	if (pipe(p1) != -1) {
 		if (pipe(p2) != -1) {
@@ -110,7 +111,7 @@ static int create_pipes(int p1[2], int p2[2], int p3[2])
 	return -1;
 }
 
-static void close_pipes(int p1[2], int p2[2], int p3[2])
+static void close_pipes(int32_t p1[2], int32_t p2[2], int32_t p3[2])
 {
 	close(p1[0]);
 	close(p1[1]);
@@ -120,9 +121,9 @@ static void close_pipes(int p1[2], int p2[2], int p3[2])
 	close(p3[1]);
 }
 
-static int start_mbrola(const char *voice_path)
+static int32_t start_mbrola(const char *voice_path)
 {
-	int error, p_stdin[2], p_stdout[2], p_stderr[2];
+	int32_t error, p_stdin[2], p_stdout[2], p_stderr[2];
 	ssize_t written;
 	char charbuf[20];
 
@@ -145,7 +146,7 @@ static int start_mbrola(const char *voice_path)
 	}
 
 	if (mbr_pid == 0) {
-		int i;
+		int32_t i;
 
 		if (dup2(p_stdin[0], 0) == -1 ||
 		    dup2(p_stdout[1], 1) == -1 ||
@@ -167,7 +168,7 @@ static int start_mbrola(const char *voice_path)
 		snprintf(charbuf, sizeof(charbuf), "%g", mbr_volume);
 		execlp("mbrola", "mbrola", "-e", "-v", charbuf,
 				voice_path, "-", "-.wav", (char *)NULL);
-		/* if execution reaches this point then the exec() failed */
+		/* if execution reaches this point32_t then the exec() failed */
 		snprintf(mbr_errorbuf, sizeof(mbr_errorbuf),
 				"mbrola: %s\n", strerror(errno));
 		written = write(2, mbr_errorbuf, strlen(mbr_errorbuf));
@@ -238,10 +239,10 @@ static void free_pending_data(void)
 	mbr_pending_data_tail = NULL;
 }
 
-static int mbrola_died(void)
+static int32_t mbrola_died(void)
 {
 	pid_t pid;
-	int status, len;
+	int32_t status, len;
 	const char *msg;
 	char msgbuf[80];
 
@@ -253,12 +254,12 @@ static int mbrola_died(void)
 	} else {
 		mbr_pid = 0;
 		if (WIFSIGNALED(status)) {
-			int sig = WTERMSIG(status);
+			int32_t sig = WTERMSIG(status);
 			snprintf(msgbuf, sizeof(msgbuf),
 					"mbrola died by signal %d", sig);
 			msg = msgbuf;
 		} else if (WIFEXITED(status)) {
-			int exst = WEXITSTATUS(status);
+			int32_t exst = WEXITSTATUS(status);
 			snprintf(msgbuf, sizeof(msgbuf),
 					"mbrola exited with status %d", exst);
 			msg = msgbuf;
@@ -278,9 +279,9 @@ static int mbrola_died(void)
 	return -1;
 }
 
-static int mbrola_has_errors(void)
+static int32_t mbrola_has_errors(void)
 {
-	int result;
+	int32_t result;
 	char buffer[256];
 	char *buf_ptr, *lf;
 
@@ -313,7 +314,7 @@ static int mbrola_has_errors(void)
 			if (lf == &buf_ptr[result - 1]) {
 				snprintf(mbr_errorbuf, sizeof(mbr_errorbuf),
 						"%s", buf_ptr);
-				/* don't consider this fatal at this point */
+				/* don't consider this fatal at this point32_t */
 				return 0;
 			}
 		}
@@ -323,10 +324,10 @@ static int mbrola_has_errors(void)
 	}
 }
 
-static int send_to_mbrola(const char *cmd)
+static int32_t send_to_mbrola(const char *cmd)
 {
 	ssize_t result;
-	int len;
+	int32_t len;
 	
 	if (!mbr_pid)
 		return -1;
@@ -335,7 +336,7 @@ static int send_to_mbrola(const char *cmd)
 	result = write(mbr_cmd_fd, cmd, len);
 
 	if (result == -1) {
-		int error = errno;
+		int32_t error = errno;
 		if (error == EPIPE && mbrola_has_errors()) {
 			return -1;
 		} else if (error == EAGAIN) {
@@ -366,7 +367,7 @@ static int send_to_mbrola(const char *cmd)
 	return result;
 }
 
-static int mbrola_is_idle(void)
+static int32_t mbrola_is_idle(void)
 {
 	char *p;
 	char buffer[20]; /* looking for "12345 (mbrola) S" so 20 is plenty*/
@@ -384,7 +385,7 @@ static int mbrola_is_idle(void)
 
 static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 {
-	int result, wait = 1;
+	int32_t result, wait = 1;
 	size_t cursize = 0;
 
 	if (!mbr_pid)
@@ -393,7 +394,7 @@ static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 	do {
 		struct pollfd pollfd[3];
 		nfds_t nfds = 0;
-		int idle;
+		int32_t idle;
 
 		pollfd[0].fd = mbr_audio_fd;
 		pollfd[0].events = POLLIN;
@@ -438,10 +439,10 @@ static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 		if (mbr_pending_data_head && pollfd[2].revents) {
 			struct datablock *head = mbr_pending_data_head;
 			char *data = head->buffer + head->done;
-			int left = head->size - head->done;
+			int32_t left = head->size - head->done;
 			result = write(mbr_cmd_fd, data, left);
 			if (result == -1) {
-				int error = errno;
+				int32_t error = errno;
 				if (error == EPIPE && mbrola_has_errors())
 					return -1;
 				err("write(): %s", strerror(error));
@@ -479,9 +480,9 @@ static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
  * API functions.
  */
 
-int init_MBR(const char *voice_path)
+int32_t init_MBR(const char *voice_path)
 {
-	int error, result;
+	int32_t error, result;
 	unsigned char wavhdr[45];
 
 	error = start_mbrola(voice_path);
@@ -532,9 +533,9 @@ void close_MBR(void)
 	mbr_volume = 1.0;
 }
 
-int reset_MBR()
+int32_t reset_MBR()
 {
-	int result, success = 1;
+	int32_t result, success = 1;
 	char dummybuf[4096];
 
 	if (mbr_state == MBR_IDLE)
@@ -557,26 +558,26 @@ int reset_MBR()
 	return success;
 }
 
-int read_MBR(void *buffer, int nb_samples)
+int32_t read_MBR(void *buffer, int32_t nb_samples)
 {
-	int result = receive_from_mbrola(buffer, nb_samples * 2);
+	int32_t result = receive_from_mbrola(buffer, nb_samples * 2);
 	if (result > 0)
 		result /= 2;
 	return result;
 }
 
-int write_MBR(const char *data)
+int32_t write_MBR(const char *data)
 {
 	mbr_state = MBR_NEWDATA;
 	return send_to_mbrola(data);
 }
 
-int flush_MBR(void)
+int32_t flush_MBR(void)
 {
 	return send_to_mbrola("\n#\n") == 3;
 }
 
-int getFreq_MBR(void)
+int32_t getFreq_MBR(void)
 {
 	return mbr_samplerate;
 }
@@ -596,9 +597,9 @@ void setVolumeRatio_MBR(float value)
 	init_MBR(mbr_voice_path);
 }
 
-int lastErrorStr_MBR(char *buffer, int bufsize)
+int32_t lastErrorStr_MBR(char *buffer, int32_t bufsize)
 {
-	int result;
+	int32_t result;
 	if (mbr_pid)
 		mbrola_has_errors();
 	result = snprintf(buffer, bufsize, "%s", mbr_errorbuf);

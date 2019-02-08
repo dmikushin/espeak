@@ -31,20 +31,20 @@
 const unsigned char pause_phonemes[8] = {0, phonPAUSE_VSHORT, phonPAUSE_SHORT, phonPAUSE, phonPAUSE_LONG, phonGLOTTALSTOP, phonPAUSE_LONG, phonPAUSE_LONG};
 
 
-extern int n_ph_list2;
+extern int32_t n_ph_list2;
 extern PHONEME_LIST2 ph_list2[N_PHONEME_LIST];	// first stage of text->phonemes
 
 
 
-static int SubstitutePhonemes(Translator *tr, PHONEME_LIST *plist_out)
+static int32_t SubstitutePhonemes(Translator *tr, PHONEME_LIST *plist_out)
 {//===================================================================
 // Copy the phonemes list and perform any substitutions that are required for the
 // current voice
-	int ix;
-	int k;
-	int replace_flags;
-	int n_plist_out = 0;
-	int word_end;
+	int32_t ix;
+	int32_t k;
+	int32_t replace_flags;
+	int32_t n_plist_out = 0;
+	int32_t word_end;
 	PHONEME_LIST2 *plist2;
 	PHONEME_TAB *next=NULL;
 
@@ -103,30 +103,30 @@ static int SubstitutePhonemes(Translator *tr, PHONEME_LIST *plist_out)
 
 
 
-void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
+void MakePhonemeList(Translator *tr, int32_t post_pause, int32_t start_sentence)
 {//=====================================================================
 
-	int  ix=0;
-	int  j;
-	int  insert_ph = 0;
+	int32_t  ix=0;
+	int32_t  j;
+	int32_t  insert_ph = 0;
 	PHONEME_LIST *phlist;
 	PHONEME_TAB *ph;
 	PHONEME_TAB *next, *next2;
-	int unstress_count = 0;
-	int word_stress = 0;
-	int current_phoneme_tab;
-	int max_stress;
-	int voicing;
-	int regression;
-	int end_sourceix;
-	int alternative;
-	int delete_count;
-	int word_start;
-	int inserted;
-	int deleted;
+	int32_t unstress_count = 0;
+	int32_t word_stress = 0;
+	int32_t current_phoneme_tab;
+	int32_t max_stress;
+	int32_t voicing;
+	int32_t regression;
+	int32_t end_sourceix;
+	int32_t alternative;
+	int32_t delete_count;
+	int32_t word_start;
+	int32_t inserted;
+	int32_t deleted;
 	PHONEME_DATA phdata;
 
-	int n_ph_list3;
+	int32_t n_ph_list3;
 	PHONEME_LIST *plist3;
 	PHONEME_LIST *plist3_inserted = NULL;
 	PHONEME_LIST ph_list3[N_PHONEME_LIST];
@@ -207,8 +207,8 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 	{
 		// set consonant clusters to all voiced or all unvoiced
 		// Regressive
-		int type;
-		int stop_propagation = 0;
+		int32_t type;
+		int32_t stop_propagation = 0;
 		voicing = 0;
 
 		for(j=n_ph_list2-1; j>=0; j--)
@@ -306,8 +306,8 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 		if(ph_list3[j].sourceix)
 		{
 			// start of a word
-			int k;
-			int nextw;
+			int32_t k;
+			int32_t nextw;
 			word_stress = 0;
 
 			// find the highest stress level in this word
@@ -355,7 +355,7 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 			if(j > 0)
 			{
 				// move all previous phonemes in the word back one place
-				int k;
+				int32_t k;
 				if(word_start > 0)
 				{
 					k = word_start;
@@ -526,7 +526,7 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 
 		if((plist3+1)->sourceix != 0)
 		{
-			int x;
+			int32_t x;
 
 			if(tr->langopts.vowel_pause && (ph->type != phPAUSE))
 			{

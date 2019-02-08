@@ -28,7 +28,7 @@
 
 // flags set for frames within a spectrum sequence
 #define FRFLAG_KLATT           0x01   // this frame includes extra data for Klatt synthesizer
-#define FRFLAG_VOWEL_CENTRE    0x02   // centre point of vowel
+#define FRFLAG_VOWEL_CENTRE    0x02   // centre pointof vowel
 #define FRFLAG_LEN_MOD         0x04   // reduce effect of length adjustment
 #define FRFLAG_BREAK_LF        0x08   // but keep f3 upwards
 #define FRFLAG_BREAK           0x10   // don't merge with next frame
@@ -67,8 +67,8 @@
 #define EMBED_C    14   // capital letter indication
 
 #define N_EMBEDDED_VALUES    15
-extern int embedded_value[N_EMBEDDED_VALUES];
-extern int embedded_default[N_EMBEDDED_VALUES];
+extern int32_t embedded_value[N_EMBEDDED_VALUES];
+extern int32_t embedded_default[N_EMBEDDED_VALUES];
 
 
 #define N_PEAKS   9
@@ -125,11 +125,11 @@ typedef struct {  // 44 bytes
 
 // formant data used by wavegen
 typedef struct {
-	int freq;     // Hz<<16
-	int height;   // height<<15
-	int left;     // Hz<<16
-	int right;    // Hz<<16
-	DOUBLEX freq1; // floating point versions of the above
+	int32_t freq;     // Hz<<16
+	int32_t height;   // height<<15
+	int32_t left;     // Hz<<16
+	int32_t right;    // Hz<<16
+	DOUBLEX freq1; // floating pointversions of the above
 	DOUBLEX height1;
 	DOUBLEX left1;
 	DOUBLEX right1;
@@ -141,23 +141,23 @@ typedef struct {
 
 typedef struct {
 unsigned char *pitch_env;
-int pitch;          // pitch Hz*256
-int pitch_ix;       // index into pitch envelope (*256)
-int pitch_inc;      // increment to pitch_ix
-int pitch_base;     // Hz*256 low, before modified by envelope
-int pitch_range;    // Hz*256 range of envelope
+int32_t pitch;          // pitch Hz*256
+int32_t pitch_ix;       // index into pitch envelope (*256)
+int32_t pitch_inc;      // increment to pitch_ix
+int32_t pitch_base;     // Hz*256 low, before modified by envelope
+int32_t pitch_range;    // Hz*256 range of envelope
 
 unsigned char *mix_wavefile;  // wave file to be added to synthesis
-int n_mix_wavefile;       // length in bytes
-int mix_wave_scale;         // 0=2 byte samples
-int mix_wave_amp;
-int mix_wavefile_ix;
-int mix_wavefile_max;    // length of available WAV data (in bytes)
-int mix_wavefile_offset;
+int32_t n_mix_wavefile;       // length in bytes
+int32_t mix_wave_scale;         // 0=2 byte samples
+int32_t mix_wave_amp;
+int32_t mix_wavefile_ix;
+int32_t mix_wavefile_max;    // length of available WAV data (in bytes)
+int32_t mix_wavefile_offset;
 
-int amplitude;
-int amplitude_v;
-int amplitude_fmt;   // percentage amplitude adjustment for formant synthesis
+int32_t amplitude;
+int32_t amplitude_v;
+int32_t amplitude_fmt;   // percentage amplitude adjustment for formant synthesis
 } WGEN_DATA;
 
 
@@ -212,7 +212,7 @@ typedef struct {
 	unsigned char tone_ph;    // tone phoneme to use with this vowel
 
 	PHONEME_TAB *ph;
-	unsigned int length;  // length_mod
+	uint32_t length;  // length_mod
 	unsigned char env;    // pitch envelope number
 	unsigned char type;
 	unsigned char prepause;
@@ -223,8 +223,8 @@ typedef struct {
 	unsigned char pitch2;
 #ifdef _ESPEAKEDIT
 	unsigned char std_length;
-	unsigned int phontab_addr;
-	int sound_param;
+	uint32_t phontab_addr;
+	int32_t sound_param;
 #endif
 } PHONEME_LIST;
 
@@ -246,30 +246,30 @@ typedef struct {
 #define pd_DONTLENGTHEN  0x4
 #define pd_REDUCELENGTHCHANGE 0x8
 typedef struct {
-	int pd_control;
-	int pd_param[N_PHONEME_DATA_PARAM];  // set from group 0 instructions
-	int sound_addr[5];
-	int sound_param[5];
-	int vowel_transition[4];
-	int pitch_env;
-	int amp_env;
+	int32_t pd_control;
+	int32_t pd_param[N_PHONEME_DATA_PARAM];  // set from group 0 instructions
+	int32_t sound_addr[5];
+	int32_t sound_param[5];
+	int32_t vowel_transition[4];
+	int32_t pitch_env;
+	int32_t amp_env;
 	char ipa_string[18];
 } PHONEME_DATA;
 
 
 typedef struct {
-	int fmt_control;
-	int use_vowelin;
-	int fmt_addr;
-	int fmt_length;
-	int fmt_amp;
-	int fmt2_addr;
-	int fmt2_lenadj;
-	int wav_addr;
-	int wav_amp;
-	int transition0;
-	int transition1;
-	int std_length;
+	int32_t fmt_control;
+	int32_t use_vowelin;
+	int32_t fmt_addr;
+	int32_t fmt_length;
+	int32_t fmt_amp;
+	int32_t fmt2_addr;
+	int32_t fmt2_lenadj;
+	int32_t wav_addr;
+	int32_t wav_amp;
+	int32_t transition0;
+	int32_t transition1;
+	int32_t std_length;
 } FMT_PARAMS;
 
 typedef struct {
@@ -362,31 +362,31 @@ typedef struct {
 
 
 typedef struct {
-	int name;
-	int length;
+	int32_t name;
+	int32_t length;
 	char *data;
 	char *filename;
 } SOUND_ICON;
 
 typedef struct {
-	int  name;
-	unsigned int  next_phoneme;
-	int  mbr_name;
-	int  mbr_name2;
-	int  percent;         // percentage length of first component
-	int  control;
+	int32_t name;
+	uint32_t  next_phoneme;
+	int32_t mbr_name;
+	int32_t mbr_name2;
+	int32_t percent;         // percentage length of first component
+	int32_t control;
 } MBROLA_TAB;
 
 typedef struct {
-	int pause_factor;
-	int clause_pause_factor;
-	unsigned int min_pause;
-	int wav_factor;
-	int lenmod_factor;
-	int lenmod2_factor;
-	int min_sample_len;
-	int loud_consonants;
-	int fast_settings[8];
+	int32_t pause_factor;
+	int32_t clause_pause_factor;
+	uint32_t min_pause;
+	int32_t wav_factor;
+	int32_t lenmod_factor;
+	int32_t lenmod2_factor;
+	int32_t min_sample_len;
+	int32_t loud_consonants;
+	int32_t fast_settings[8];
 } SPEED_FACTORS;
 
 
@@ -431,19 +431,19 @@ typedef struct {
 	unsigned char split_tune;
 
 	unsigned char spare[8];
-	int spare2;       // the struct length should be a multiple of 4 bytes
+	int32_t spare2;       // the struct length should be a multiple of 4 bytes
 } TUNE;
 
-extern int n_tunes;
+extern int32_t n_tunes;
 extern TUNE *tunes;
 
 // phoneme table
 extern PHONEME_TAB *phoneme_tab[N_PHONEME_TAB];
 
 // list of phonemes in a clause
-extern int n_phoneme_list;
+extern int32_t n_phoneme_list;
 extern PHONEME_LIST phoneme_list[N_PHONEME_LIST+1];
-extern unsigned int embedded_list[];
+extern uint32_t embedded_list[];
 
 extern unsigned char env_fall[128];
 extern unsigned char env_rise[128];
@@ -475,65 +475,65 @@ extern unsigned char pitch_adjust_tab[MAX_PITCH_VALUE+1];
 #define MIN_WCMDQ  25   // need this many free entries before adding new phoneme
 
 extern long64 wcmdq[N_WCMDQ][4];
-extern int wcmdq_head;
-extern int wcmdq_tail;
+extern int32_t wcmdq_head;
+extern int32_t wcmdq_tail;
 
 // from Wavegen file
-int  WcmdqFree();
+int32_t WcmdqFree();
 void WcmdqStop();
-int  WcmdqUsed();
+int32_t WcmdqUsed();
 void WcmdqInc();
-int  WavegenOpenSound();
-int  WavegenCloseSound();
-int  WavegenInitSound();
-void WavegenInit(int rate, int wavemult_fact);
-float polint(float xa[],float ya[],int n,float x);
-int WavegenFill(int fill_zeros);
-void MarkerEvent(int type, unsigned int char_position, int value, int value2, unsigned char *out_ptr);
+int32_t WavegenOpenSound();
+int32_t WavegenCloseSound();
+int32_t WavegenInitSound();
+void WavegenInit(int32_t rate, int32_t wavemult_fact);
+float polint(float xa[],float ya[],int32_t n,float x);
+int32_t WavegenFill(int32_t fill_zeros);
+void MarkerEvent(int32_t type, uint32_t char_position, int32_t value, int32_t value2, unsigned char *out_ptr);
 
 
 extern unsigned char *wavefile_data;
-extern int samplerate;
-extern int samplerate_native;
+extern int32_t samplerate;
+extern int32_t samplerate_native;
 
-extern int wavefile_ix;
-extern int wavefile_amp;
-extern int wavefile_ix2;
-extern int wavefile_amp2;
-extern int vowel_transition[4];
-extern int vowel_transition0, vowel_transition1;
+extern int32_t wavefile_ix;
+extern int32_t wavefile_amp;
+extern int32_t wavefile_ix2;
+extern int32_t wavefile_amp2;
+extern int32_t vowel_transition[4];
+extern int32_t vowel_transition0, vowel_transition1;
 
 #define N_ECHO_BUF 5500   // max of 250mS at 22050 Hz
-extern int echo_head;
-extern int echo_tail;
-extern int echo_amp;
+extern int32_t echo_head;
+extern int32_t echo_tail;
+extern int32_t echo_amp;
 extern short echo_buf[N_ECHO_BUF];
 
-extern int mbrola_delay;
+extern int32_t mbrola_delay;
 extern char mbrola_name[20];
 
 // from synthdata file
-unsigned int LookupSound(PHONEME_TAB *ph1, PHONEME_TAB *ph2, int which, int *match_level, int control);
-frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,  int *n_frames, PHONEME_LIST *plist);
+uint32_t LookupSound(PHONEME_TAB *ph1, PHONEME_TAB *ph2, int32_t which, int32_t *match_level, int32_t control);
+frameref_t *LookupSpect(PHONEME_TAB *this_ph, int32_t which, FMT_PARAMS *fmt_params,  int32_t *n_frames, PHONEME_LIST *plist);
 
-unsigned char *LookupEnvelope(int ix);
-int LoadPhData(int *srate);
+unsigned char *LookupEnvelope(int32_t ix);
+int32_t LoadPhData(int32_t *srate);
 
 void SynthesizeInit(void);
-int  Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume);
-void MakeWave2(PHONEME_LIST *p, int n_ph);
-int  SynthOnTimer(void);
-int  SpeakNextClause(FILE *f_text, const void *text_in, int control);
-int  SynthStatus(void);
-void SetSpeed(int control);
-void SetEmbedded(int control, int value);
-void SelectPhonemeTable(int number);
-int  SelectPhonemeTableName(const char *name);
+int32_t Generate(PHONEME_LIST *phoneme_list, int32_t *n_ph, int32_t resume);
+void MakeWave2(PHONEME_LIST *p, int32_t n_ph);
+int32_t SynthOnTimer(void);
+int32_t SpeakNextClause(FILE *f_text, const void *text_in, int32_t control);
+int32_t SynthStatus(void);
+void SetSpeed(int32_t control);
+void SetEmbedded(int32_t control, int32_t value);
+void SelectPhonemeTable(int32_t number);
+int32_t SelectPhonemeTableName(const char *name);
 
-void Write4Bytes(FILE *f, int value);
-int Read4Bytes(FILE *f);
-int Reverse4Bytes(int word);
-int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, char *err_name,int flags);
+void Write4Bytes(FILE *f, int32_t value);
+int32_t Read4Bytes(FILE *f);
+int32_t Reverse4Bytes(int32_t word);
+int32_t CompileDictionary(const char *dsource, const char *dict_name, FILE *log, char *err_name,int32_t flags);
 
 
 #define ENV_LEN  128    // length of pitch envelopes
@@ -542,48 +542,48 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 #define N_ENVELOPE_DATA   20
 extern unsigned char *envelope_data[N_ENVELOPE_DATA];
 
-extern int formant_rate[];         // max rate of change of each formant
+extern int32_t formant_rate[];         // max rate of change of each formant
 extern SPEED_FACTORS speed;
 
 extern long count_samples;
-extern int outbuf_size;
+extern int32_t outbuf_size;
 extern unsigned char *out_ptr;
 extern unsigned char *out_start;
 extern unsigned char *out_end;
-extern int event_list_ix;
+extern int32_t event_list_ix;
 extern espeak_EVENT *event_list;
 extern t_espeak_callback* synth_callback;
-extern int option_log_frames;
+extern int32_t option_log_frames;
 extern const char *version_string;
-extern const int version_phdata;
+extern const int32_t version_phdata;
 extern double sonicSpeed;
 
 #define N_SOUNDICON_TAB  80   // total entries in soundicon_tab
 #define N_SOUNDICON_SLOTS 4    // number of slots reserved for dynamic loading of audio files
-extern int n_soundicon_tab;
+extern int32_t n_soundicon_tab;
 extern SOUND_ICON soundicon_tab[N_SOUNDICON_TAB];
 
 espeak_ERROR SetVoiceByName(const char *name);
 espeak_ERROR SetVoiceByProperties(espeak_VOICE *voice_selector);
-espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int srate);
-void SetParameter(int parameter, int value, int relative);
-int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbrola);
-int MbrolaGenerate(PHONEME_LIST *phoneme_list, int *n_ph, int resume);
-int MbrolaFill(int length, int resume, int amplitude);
+espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int32_t srate);
+void SetParameter(int32_t parameter, int32_t value, int32_t relative);
+int32_t MbrolaTranslate(PHONEME_LIST *plist, int32_t n_phonemes, int32_t resume, FILE *f_mbrola);
+int32_t MbrolaGenerate(PHONEME_LIST *phoneme_list, int32_t *n_ph, int32_t resume);
+int32_t MbrolaFill(int32_t length, int32_t resume, int32_t amplitude);
 void MbrolaReset(void);
-void DoEmbedded(int *embix, int sourceix);
-void DoMarker(int type, int char_posn, int length, int value);
-void DoPhonemeMarker(int type, int char_posn, int length, char *name);
-int DoSample3(PHONEME_DATA *phdata, int length_mod, int amp);
-int DoSpect2(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,  PHONEME_LIST *plist, int modulation);
-int PauseLength(int pause, int control);
-int LookupPhonemeTable(const char *name);
-unsigned char *GetEnvelope(int index);
-int NumInstnWords(USHORT *prog);
+void DoEmbedded(int32_t *embix, int32_t sourceix);
+void DoMarker(int32_t type, int32_t char_posn, int32_t length, int32_t value);
+void DoPhonemeMarker(int32_t type, int32_t char_posn, int32_t length, char *name);
+int32_t DoSample3(PHONEME_DATA *phdata, int32_t length_mod, int32_t amp);
+int32_t DoSpect2(PHONEME_TAB *this_ph, int32_t which, FMT_PARAMS *fmt_params,  PHONEME_LIST *plist, int32_t modulation);
+int32_t PauseLength(int32_t pause, int32_t control);
+int32_t LookupPhonemeTable(const char *name);
+unsigned char *GetEnvelope(int32_t index);
+int32_t NumInstnWords(USHORT *prog);
 
 void InitBreath(void);
 
 void KlattInit();
-void KlattReset(int control);
-int Wavegen_Klatt2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2);
+void KlattReset(int32_t control);
+int32_t Wavegen_Klatt2(int32_t length, int32_t modulation, int32_t resume, frame_t *fr1, frame_t *fr2);
 

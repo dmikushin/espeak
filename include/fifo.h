@@ -40,7 +40,7 @@ espeak_ERROR fifo_stop ();
 
 // Is there a running command?
 // Returns 1 if yes; 0 otherwise.
-int fifo_is_busy ();
+int32_t fifo_is_busy ();
 
 // Terminate the fifo component.
 // Last function to be called.
@@ -53,6 +53,6 @@ void fifo_terminate();
 // stopping speech as soon as a cancel command is applied. 
 //
 // Returns 1 if yes, or 0 otherwise.
-int fifo_is_command_enabled();
+int32_t fifo_is_command_enabled();
 
 #endif

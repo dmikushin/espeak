@@ -24,7 +24,9 @@
 
 // conditional compilation options
 #define INCLUDE_KLATT
+#if HAVE_POLL
 #define INCLUDE_MBROLA
+#endif
 #define INCLUDE_SONIC
 
 #if defined(BYTE_ORDER) && BYTE_ORDER == BIG_ENDIAN
@@ -47,7 +49,9 @@
 //#define ESPEAK_API  extern "C"
 
 #ifdef LIBRARY
+#if HAVE_SEMAPHORE
 #define USE_ASYNC
+#endif
 #endif
 
 #ifdef _ESPEAKEDIT
@@ -70,9 +74,9 @@ typedef unsigned long long64;   // use this for conversion between pointers and 
 
 typedef struct {
    const char *mnem;
-   int  value;
+   int32_t value;
 } MNEM_TAB;
-int LookupMnem(MNEM_TAB *table, const char *string);
+int32_t LookupMnem(MNEM_TAB *table, const char *string);
 
 
 #ifdef PLATFORM_WINDOWS
@@ -83,9 +87,9 @@ int LookupMnem(MNEM_TAB *table, const char *string);
 
 extern char path_home[N_PATH_HOME];    // this is the espeak-data directory
 
-extern void strncpy0(char *to,const char *from, int size);
-int  GetFileLength(const char *filename);
-char *Alloc(int size);
+extern void strncpy0(char *to,const char *from, int32_t size);
+int32_t GetFileLength(const char *filename);
+char *Alloc(int32_t size);
 void Free(void *ptr);
 
 #endif // SPEECH_H

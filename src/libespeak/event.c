@@ -17,9 +17,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#ifdef USE_ASYNC
+
 #include "speech.h"
 
-#ifdef USE_ASYNC
 // This source file is only used for asynchronious modes
 
 
@@ -53,7 +54,7 @@ static pthread_t my_thread;
 static bool thread_inited;
 
 static t_espeak_callback* my_callback = NULL;
-static int my_event_is_running=0;
+static int32_t my_event_is_running=0;
 
 enum {MIN_TIMEOUT_IN_MS=10,
       ACTIVITY_TIMEOUT=50, // in ms, check that the stream is active
@@ -69,7 +70,7 @@ typedef struct t_node
 
 static node* head=NULL;
 static node* tail=NULL;
-static int node_counter=0;
+static int32_t node_counter=0;
 static espeak_ERROR push(void* data);
 static void* pop();
 static void init();
@@ -199,7 +200,7 @@ static espeak_EVENT* event_copy (espeak_EVENT* event)
 static void event_notify(espeak_EVENT* event)
 {
 ENTER("event_notify");
-	static unsigned int a_old_uid = 0;
+	static uint32_t a_old_uid = 0;
 
 	espeak_EVENT events[2];
 	memcpy(&events[0],event,sizeof(espeak_EVENT));     // the event parameter in the callback function should be an array of eventd
@@ -247,7 +248,7 @@ ENTER("event_notify");
 //>
 //<event_delete
 
-static int event_delete(espeak_EVENT* event)
+static int32_t event_delete(espeak_EVENT* event)
 {
 ENTER("event_delete");
 
@@ -294,7 +295,7 @@ ENTER("event_declare");
 		return EE_INTERNAL_ERROR;
 	}
 
-	int a_status = pthread_mutex_lock(&my_mutex);
+	int32_t a_status = pthread_mutex_lock(&my_mutex);
 	espeak_ERROR a_error = EE_OK;
 
 	if (!a_status)
@@ -320,7 +321,7 @@ ENTER("event_declare");
 //       // (for possible forthcoming 'end of command' checks)
 	SHOW_TIME("event_declare > post my_sem_start_is_required\n");
 	sem_post(&my_sem_start_is_required);
-//       int val=1;
+//       int32_t val=1;
 //       while (val)
 // 	{
 // 	  usleep(50000); // TBD: event?
@@ -343,8 +344,8 @@ espeak_ERROR event_clear_all ()
 {
 	ENTER("event_clear_all");
 
-	int a_status = pthread_mutex_lock(&my_mutex);
-	int a_event_is_running = 0;
+	int32_t a_status = pthread_mutex_lock(&my_mutex);
+	int32_t a_event_is_running = 0;
 
 	SHOW_TIME("event_stop > locked\n");
 	if (a_status != 0)
@@ -387,14 +388,14 @@ espeak_ERROR event_clear_all ()
 //>
 //<sleep_until_timeout_or_stop_request
 
-static int sleep_until_timeout_or_stop_request(uint32_t time_in_ms)
+static int32_t sleep_until_timeout_or_stop_request(uint32_t time_in_ms)
 {
 ENTER("sleep_until_timeout_or_stop_request");
 
-	int a_stop_is_required=0;
+	int32_t a_stop_is_required=0;
 	struct timespec ts;
 	struct timeval tv;
-	int err=0;
+	int32_t err=0;
 
 	clock_gettime2( &ts);
 
@@ -434,13 +435,13 @@ ENTER("sleep_until_timeout_or_stop_request");
 // If the stream is opened but the audio samples are not played,
 // a timeout is started.
 
-static int get_remaining_time(uint32_t sample, uint32_t* time_in_ms, int* stop_is_required)
+static int32_t get_remaining_time(uint32_t sample, uint32_t* time_in_ms, int* stop_is_required)
 {
 ENTER("get_remaining_time");
 
-	int err = 0;
+	int32_t err = 0;
 	*stop_is_required = 0;
-	int i=0;
+	int32_t i=0;
 
 	for (i=0; i < MAX_ACTIVITY_CHECK && (*stop_is_required == 0); i++)
 	{
@@ -481,10 +482,10 @@ ENTER("polling_thread");
 
 	while(1)
 	{
-		int a_stop_is_required=0;
+		int32_t a_stop_is_required=0;
 
 		SHOW_TIME("polling_thread > locking\n");
-		int a_status = pthread_mutex_lock(&my_mutex);
+		int32_t a_status = pthread_mutex_lock(&my_mutex);
 		SHOW_TIME("polling_thread > locked (my_event_is_running = 0)\n");
 		my_event_is_running = 0;
 		pthread_mutex_unlock(&my_mutex);
@@ -532,7 +533,7 @@ ENTER("polling_thread");
 
 			uint32_t time_in_ms = 0;
 
-			int err = get_remaining_time((uint32_t)event->sample,
+			int32_t err = get_remaining_time((uint32_t)event->sample,
 							&time_in_ms,
 							&a_stop_is_required);
 			if (a_stop_is_required > 0)

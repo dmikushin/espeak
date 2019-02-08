@@ -104,8 +104,8 @@ extern const unsigned char pause_phonemes[8];  // 0, vshort, short, pause, long,
 // main table of phonemes, index by phoneme number (1-254)
 
 typedef struct {
-	unsigned int  mnemonic;      // Up to 4 characters.  The first char is in the l.s.byte
-	unsigned int  phflags;       // bits 16-19 place of articulation
+	uint32_t  mnemonic;      // Up to 4 characters.  The first char is in the l.s.byte
+	uint32_t  phflags;       // bits 16-19 place of articulation
 	unsigned short program;      // index into phondata file
 	unsigned char  code;         // the phoneme number
 	unsigned char  type;         // phVOWEL, phPAUSE, phSTOP etc
@@ -120,17 +120,17 @@ typedef struct {
 
 // Several phoneme tables may be loaded into memory. phoneme_tab points to
 // one for the current voice
-extern int n_phoneme_tab;
-extern int current_phoneme_table;
+extern int32_t n_phoneme_tab;
+extern int32_t current_phoneme_table;
 extern PHONEME_TAB *phoneme_tab[N_PHONEME_TAB];
 extern unsigned char phoneme_tab_flags[N_PHONEME_TAB];  // bit 0: not inherited
 
 typedef struct {
 	char name[N_PHONEME_TAB_NAME];
 	PHONEME_TAB *phoneme_tab_ptr;
-	int n_phonemes;
-	int includes;            // also include the phonemes from this other phoneme table
-	int equivalence_tables;   // lists of equivalent phonemes to match other languages, byte index into phondata
+	int32_t n_phonemes;
+	int32_t includes;            // also include the phonemes from this other phoneme table
+	int32_t equivalence_tables;   // lists of equivalent phonemes to match other languages, byte index into phondata
 } PHONEME_TAB_LIST;
 
 
@@ -143,14 +143,14 @@ typedef struct {
 	char type;   // 0=always replace, 1=only at end of word
 } REPLACE_PHONEMES;
 
-extern int n_replace_phonemes;
+extern int32_t n_replace_phonemes;
 extern REPLACE_PHONEMES replace_phonemes[N_REPLACE_PHONEMES];
 
 
 // Table of phoneme programs and lengths.  Used by MakeVowelLists
 typedef struct {
-	unsigned int addr;
-	unsigned int length;
+	uint32_t addr;
+	uint32_t length;
 } PHONEME_PROG_LOG;
 
 
@@ -158,13 +158,13 @@ typedef struct {
 #define PH(c1,c2)  (c2<<8)+c1          // combine two characters into an integer for phoneme name
 #define PH3(c1,c2,c3) (c3<<16)+(c2<<8)+c1
 #define PhonemeCode2(c1,c2)  PhonemeCode((c2<<8)+c1)
-int LookupPhonemeString(const char *string);
-int PhonemeCode(unsigned int mnem);
+int32_t LookupPhonemeString(const char *string);
+int32_t PhonemeCode(uint32_t mnem);
 
-const char *EncodePhonemes(const char *p, char *outptr, int *bad_phoneme);
+const char *EncodePhonemes(const char *p, char *outptr, int32_t *bad_phoneme);
 void DecodePhonemes(const char *inptr, char *outptr);
 
-extern const char *WordToString(unsigned int word);
+extern const char *WordToString(uint32_t word);
 
 extern PHONEME_TAB_LIST phoneme_tab_list[N_PHONEME_TABS];
-extern int phoneme_tab_number;
+extern int32_t phoneme_tab_number;

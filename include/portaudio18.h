@@ -42,7 +42,7 @@ extern "C"
  *
  */
 
-typedef int PaError;
+typedef int32_t PaError;
 typedef enum {
     paNoError = 0,
 
@@ -105,7 +105,7 @@ const char *Pa_GetErrorText( PaError errnum );
  Formats marked "always available" are supported (emulated) by all 
  PortAudio implementations.
  
- The floating point representation (paFloat32) uses +1.0 and -1.0 as the 
+ The floating pointrepresentation (paFloat32) uses +1.0 and -1.0 as the 
  maximum and minimum respectively.
 
  paUInt8 is an unsigned 8 bit format where 128 is considered "ground"
@@ -131,19 +131,19 @@ typedef unsigned long PaSampleFormat;
 
 */
 
-typedef int PaDeviceID;
+typedef int32_t PaDeviceID;
 #define paNoDevice -1
 
-int Pa_CountDevices( void );
+int32_t Pa_CountDevices( void );
 
 typedef struct
 {
-    int structVersion;
+    int32_t structVersion;
     const char *name;
-    int maxInputChannels;
-    int maxOutputChannels;
+    int32_t maxInputChannels;
+    int32_t maxOutputChannels;
     /* Number of discrete rates, or -1 if range supported. */
-    int numSampleRates;
+    int32_t numSampleRates;
     /* Array of supported sample rates, or {min,max} if range supported. */
     const double *sampleRates;
     PaSampleFormat nativeSampleFormats;
@@ -221,7 +221,7 @@ typedef double PaTimestamp;
 
 */
 
-typedef int (PortAudioCallback)(
+typedef int32_t (PortAudioCallback)(
     void *inputBuffer, void *outputBuffer,
     unsigned long framesPerBuffer,
     PaTimestamp outTime, void *userData );
@@ -268,7 +268,7 @@ typedef void PortAudioStream;
  function. inputSampleFormat may be any of the formats described by the
  PaSampleFormat enumeration (see above). PortAudio guarantees support for
  the device's native formats (nativeSampleFormats in the device info record)
- and additionally 16 and 32 bit integer and 32 bit floating point formats.
+ and additionally 16 and 32 bit integer and 32 bit floating pointformats.
  Support for other formats is implementation defined.
  
  inputDriverInfo is a pointer to an optional driver specific data structure
@@ -327,11 +327,11 @@ typedef void PortAudioStream;
 
 PaError Pa_OpenStream( PortAudioStream** stream,
                        PaDeviceID inputDevice,
-                       int numInputChannels,
+                       int32_t numInputChannels,
                        PaSampleFormat inputSampleFormat,
                        void *inputDriverInfo,
                        PaDeviceID outputDevice,
-                       int numOutputChannels,
+                       int32_t numOutputChannels,
                        PaSampleFormat outputSampleFormat,
                        void *outputDriverInfo,
                        double sampleRate,
@@ -356,8 +356,8 @@ PaError Pa_OpenStream( PortAudioStream** stream,
 */
 
 PaError Pa_OpenDefaultStream( PortAudioStream** stream,
-                              int numInputChannels,
-                              int numOutputChannels,
+                              int32_t numInputChannels,
+                              int32_t numOutputChannels,
                               PaSampleFormat sampleFormat,
                               double sampleRate,
                               unsigned long framesPerBuffer,
@@ -436,7 +436,7 @@ double Pa_GetCPULoad( PortAudioStream* stream );
  
 */
 
-int Pa_GetMinNumBuffers( int framesPerBuffer, double sampleRate );
+int32_t Pa_GetMinNumBuffers( int32_t framesPerBuffer, double sampleRate );
 
 /*
  Pa_Sleep() puts the caller to sleep for at least 'msec' milliseconds.
