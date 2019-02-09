@@ -333,7 +333,7 @@ static void PrintVersion()
 #define optional_argument 2
 #endif
 
-int32_t main (int32_t argc, char **argv)
+int main (int argc, char **argv)
 //==============================
 {
 	static struct option long_options[] =

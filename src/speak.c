@@ -361,6 +361,9 @@ static void init_path(char *argv0, char *path_specified)
 #ifdef PLATFORM_DOS
 		strcpy(path_home,PATH_ESPEAK_DATA);
 #else
+#ifdef PLATFORM_MSP430
+	// TODO
+#else
 	char *env;
 	if((env = getenv("ESPEAK_DATA_PATH")) != NULL)
 	{
@@ -374,6 +377,7 @@ static void init_path(char *argv0, char *path_specified)
 	{
 		strcpy(path_home,PATH_ESPEAK_DATA);
 	}
+#endif
 #endif
 #endif
 }
@@ -449,7 +453,7 @@ static void StopSpeak(int32_t unused)
 #define optional_argument 2
 #endif
 
-int32_t main (int32_t argc, char **argv)
+int main (int argc, char **argv)
 //==============================
 {
 	static struct option long_options[] =
